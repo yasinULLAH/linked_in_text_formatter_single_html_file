@@ -1,24 +1,18 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced LinkedIn Text Formatter</title>
-    <meta name="description"
-        content="A powerful tool to format your LinkedIn posts with bold, italic, lists, and special symbols to make your content stand out. Supports both English and Urdu text.">
-    <meta name="keywords"
-        content="linkedin formatter, text formatter, linkedin post editor, bold text, italic text, urdu linkedin post, Yasin Ullah, Pakistan">
-    <meta name="author" content="Yasin Ullah, Pakistan">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Advanced LinkedIn Text Formatter</title>
+<meta content="A powerful tool to format your LinkedIn posts with bold, italic, lists, and special symbols to make your content stand out. Supports both English and Urdu text." name="description"/>
+<meta content="linkedin formatter, text formatter, linkedin post editor, bold text, italic text, urdu linkedin post, Yasin Ullah, Pakistan" name="keywords"/>
+<meta content="Yasin Ullah, Pakistan" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<style>
         :root {
             --bg-color: #f8f9fa;
             --text-color: #212529;
@@ -219,67 +213,55 @@
             border-top: 1px solid var(--border-color);
         }
     </style>
-</head>
-
+<link href="manifest.json" rel="manifest"/><link href="favicon.ico" rel="icon" type="image/x-icon"/></head>
 <body>
-
-    <div class="container">
-        <header>
-            <h1>LinkedIn Formatter</h1>
-            <button class="theme-switcher" id="theme-toggle" aria-label="Toggle dark mode">
-                <i class="bi bi-moon-stars-fill"></i>
-            </button>
-        </header>
-
-        <div class="main-content">
-            <div class="card">
-                <h2>Input</h2>
-                <div class="toolbar">
-                    <button class="btn btn-tool" data-format="bold" title="Bold"><i
-                            class="bi bi-type-bold"></i></button>
-                    <button class="btn btn-tool" data-format="italic" title="Italic"><i
-                            class="bi bi-type-italic"></i></button>
-                    <button class="btn btn-tool" data-format="strikethrough" title="Strikethrough"><i
-                            class="bi bi-type-strikethrough"></i></button>
-                    <button class="btn btn-tool" data-format="bullet" title="Bullet List"><i
-                            class="bi bi-list-ul"></i></button>
-                    <button class="btn btn-tool" data-format="number" title="Numbered List"><i
-                            class="bi bi-list-ol"></i></button>
-                </div>
-                <textarea id="input-text" dir="auto"
-                    placeholder="Start writing or paste your LinkedIn post here..."></textarea>
-                <div class="status-bar">
-                    <span id="char-count">Characters: 0</span> | <span id="word-count">Words: 0</span>
-                </div>
-                <div class="main-actions">
-                    <button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear</button>
-                    <button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
+<div class="container">
+<header>
+<h1>LinkedIn Formatter</h1>
+<button aria-label="Toggle dark mode" class="theme-switcher" id="theme-toggle">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+</header>
+<div class="main-content">
+<div class="card">
+<h2>Input</h2>
+<div class="toolbar">
+<button class="btn btn-tool" data-format="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+<button class="btn btn-tool" data-format="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+<button class="btn btn-tool" data-format="strikethrough" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
+<button class="btn btn-tool" data-format="bullet" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+<button class="btn btn-tool" data-format="number" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+</div>
+<textarea dir="auto" id="input-text" placeholder="Start writing or paste your LinkedIn post here..."></textarea>
+<div class="status-bar">
+<span id="char-count">Characters: 0</span> | <span id="word-count">Words: 0</span>
+</div>
+<div class="main-actions">
+<button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear</button>
+<button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
                         Result</button>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2>Preview</h2>
-                <div class="preview" id="output-preview" dir="auto"></div>
-            </div>
-        </div>
-
-        <div class="data-management card">
-            <h3>Content Management</h3>
-            <div class="data-actions">
-                <button class="btn btn-secondary" id="load-sample-btn"><i class="bi bi-lightbulb"></i> Load
+</div>
+</div>
+<div class="card">
+<h2>Preview</h2>
+<div class="preview" dir="auto" id="output-preview"></div>
+</div>
+</div>
+<div class="data-management card">
+<h3>Content Management</h3>
+<div class="data-actions">
+<button class="btn btn-secondary" id="load-sample-btn"><i class="bi bi-lightbulb"></i> Load
                     Sample</button>
-                <button class="btn btn-secondary" id="save-draft-btn"><i class="bi bi-save"></i> Save Draft</button>
-                <button class="btn btn-secondary" id="load-draft-btn"><i class="bi bi-folder-symlink"></i> Load
+<button class="btn btn-secondary" id="save-draft-btn"><i class="bi bi-save"></i> Save Draft</button>
+<button class="btn btn-secondary" id="load-draft-btn"><i class="bi bi-folder-symlink"></i> Load
                     Draft</button>
-                <button class="btn btn-secondary" id="export-btn"><i class="bi bi-download"></i> Export to TXT</button>
-                <button class="btn btn-secondary" id="import-btn"><i class="bi bi-upload"></i> Import from TXT</button>
-                <input type="file" id="import-file" accept=".txt" style="display: none;">
-            </div>
-        </div>
-    </div>
-
-    <script>
+<button class="btn btn-secondary" id="export-btn"><i class="bi bi-download"></i> Export to TXT</button>
+<button class="btn btn-secondary" id="import-btn"><i class="bi bi-upload"></i> Import from TXT</button>
+<input accept=".txt" id="import-file" style="display: none;" type="file"/>
+</div>
+</div>
+</div>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const inputText = document.getElementById('input-text');
             const outputPreview = document.getElementById('output-preview');
@@ -546,6 +528,22 @@
             updateOutput();
         });
     </script>
-</body>
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
+
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
+
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
+
+  wb.register();
+</script></body>
 </html>
