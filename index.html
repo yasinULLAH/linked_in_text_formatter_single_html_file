@@ -332,8 +332,8 @@
                 formatted = formatted.replace(/^(---|\*\*\*|___)\s*$/gm, '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬');
 
                 // ## HEADINGS (Corrected RTL symbols) ##
-                formatted = formatted.replace(/^###### (.*$)/gm, (m, p1) => `➤ ${toBold(p1)} ◀`);
-                formatted = formatted.replace(/^##### (.*$)/gm, (m, p1) => `➤ ${toBold(p1)} ◀`);
+                formatted = formatted.replace(/^###### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
+                formatted = formatted.replace(/^##### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
                 formatted = formatted.replace(/^#### (.*$)/gm, (m, p1) => toBold(p1));
                 formatted = formatted.replace(/^### (.*$)/gm, (m, p1) => `⟪ ${toBold(p1)} ⟫`);
                 formatted = formatted.replace(/^## (.*$)/gm, (m, p1) => `◆ ${toBold(p1)} ◆`);
@@ -344,7 +344,7 @@
                     if (!content.trim()) return '';
                     const converted = toBold(content);
                     // If it's Urdu, use ➤ and its mirror ◀.
-                    return converted === content ? `➤ ${content} ◀` : converted;
+                    return converted === content ? `◀ ${content} ▶` : converted;
                 });
 
                 // ## ITALIC: *text* or _text* (Symbol is symmetrical) ##

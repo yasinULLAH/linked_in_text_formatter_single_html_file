@@ -58,15 +58,23 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "da07bfe0519e366865d30b53daf94334"
+        "revision": "b49b9d6917445182cdf8d68ced5dc286"
+    },
+    {
+        "url": "manifest.json",
+        "revision": "a25f9e6ceb51518714cf7b4d9181f8e2"
     },
     {
         "url": "offline.html",
-        "revision": "7656c61e25225c4fcc77cb000be6d527"
+        "revision": "93dd8135f88165fc1bbc0acf525cd1d3"
     },
     {
         "url": "readme.md",
         "revision": "819466aa9027d4df796b3c057af21d22"
+    },
+    {
+        "url": "sw.js",
+        "revision": "7e48e31df4d88db061167a903ed6a415"
     }
 ]);
 
