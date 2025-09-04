@@ -1,25 +1,18 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Advanced LinkedIn Text Formatter</title>
-    <meta
-        content="A powerful tool to format your LinkedIn posts with bold, italic, lists, and special symbols to make your content stand out. Supports both English and Urdu text."
-        name="description" />
-    <meta
-        content="linkedin formatter, text formatter, linkedin post editor, bold text, italic text, urdu linkedin post, Yasin Ullah, Pakistan"
-        name="keywords" />
-    <meta content="Yasin Ullah, Pakistan" name="author" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap"
-        rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Advanced LinkedIn Text Formatter</title>
+<meta content="A powerful tool to format your LinkedIn posts with bold, italic, lists, and special symbols to make your content stand out. Supports both English and Urdu text." name="description"/>
+<meta content="linkedin formatter, text formatter, linkedin post editor, bold text, italic text, urdu linkedin post, Yasin Ullah, Pakistan" name="keywords"/>
+<meta content="Yasin Ullah, Pakistan" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<style>
         :root {
             --bg-color: #f8f9fa;
             --text-color: #212529;
@@ -220,64 +213,57 @@
             border-top: 1px solid var(--border-color);
         }
     </style>
-    <link href="manifest.json" rel="manifest" />
-    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+<link href="manifest.json" rel="manifest"/>
+<link href="favicon.ico" rel="icon" type="image/x-icon"/>
 </head>
-
 <body>
-    <div class="container">
-        <header>
-            <h1>LinkedIn Formatter</h1>
-            <button aria-label="Toggle dark mode" class="theme-switcher" id="theme-toggle">
-                <i class="bi bi-moon-stars-fill"></i>
-            </button>
-        </header>
-        <div class="main-content">
-            <div class="card">
-                <h2>Input</h2>
-                <div class="toolbar">
-                    <button class="btn btn-tool" data-format="bold" title="Bold"><i
-                            class="bi bi-type-bold"></i></button>
-                    <button class="btn btn-tool" data-format="italic" title="Italic"><i
-                            class="bi bi-type-italic"></i></button>
-                    <button class="btn btn-tool" data-format="strikethrough" title="Strikethrough"><i
-                            class="bi bi-type-strikethrough"></i></button>
-                    <button class="btn btn-tool" data-format="bullet" title="Bullet List"><i
-                            class="bi bi-list-ul"></i></button>
-                    <button class="btn btn-tool" data-format="number" title="Numbered List"><i
-                            class="bi bi-list-ol"></i></button>
-                </div>
-                <textarea dir="auto" id="input-text"
-                    placeholder="Start writing or paste your LinkedIn post here..."></textarea>
-                <div class="status-bar">
-                    <span id="char-count">Characters: 0</span> | <span id="word-count">Words: 0</span>
-                </div>
-                <div class="main-actions">
-                    <button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear</button>
-                    <button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
+<div class="container">
+<header>
+<h1>LinkedIn Formatter</h1>
+<button aria-label="Toggle dark mode" class="theme-switcher" id="theme-toggle">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+</header>
+<div class="main-content">
+<div class="card">
+<h2>Input</h2>
+<div class="toolbar">
+<button class="btn btn-tool" data-format="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+<button class="btn btn-tool" data-format="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+<button class="btn btn-tool" data-format="strikethrough" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
+<button class="btn btn-tool" data-format="bullet" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+<button class="btn btn-tool" data-format="number" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+</div>
+<textarea dir="auto" id="input-text" placeholder="Start writing or paste your LinkedIn post here..."></textarea>
+<div class="status-bar">
+<span id="char-count">Characters: 0</span> | <span id="word-count">Words: 0</span>
+</div>
+<div class="main-actions">
+<button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear</button>
+<button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
                         Result</button>
-                </div>
-            </div>
-            <div class="card">
-                <h2>Preview</h2>
-                <div class="preview" dir="auto" id="output-preview"></div>
-            </div>
-        </div>
-        <div class="data-management card">
-            <h3>Content Management</h3>
-            <div class="data-actions">
-                <button class="btn btn-secondary" id="load-sample-btn"><i class="bi bi-lightbulb"></i> Load
+</div>
+</div>
+<div class="card">
+<h2>Preview</h2>
+<div class="preview" dir="auto" id="output-preview"></div>
+</div>
+</div>
+<div class="data-management card">
+<h3>Content Management</h3>
+<div class="data-actions">
+<button class="btn btn-secondary" id="load-sample-btn"><i class="bi bi-lightbulb"></i> Load
                     Sample</button>
-                <button class="btn btn-secondary" id="save-draft-btn"><i class="bi bi-save"></i> Save Draft</button>
-                <button class="btn btn-secondary" id="load-draft-btn"><i class="bi bi-folder-symlink"></i> Load
+<button class="btn btn-secondary" id="save-draft-btn"><i class="bi bi-save"></i> Save Draft</button>
+<button class="btn btn-secondary" id="load-draft-btn"><i class="bi bi-folder-symlink"></i> Load
                     Draft</button>
-                <button class="btn btn-secondary" id="export-btn"><i class="bi bi-download"></i> Export to TXT</button>
-                <button class="btn btn-secondary" id="import-btn"><i class="bi bi-upload"></i> Import from TXT</button>
-                <input accept=".txt" id="import-file" style="display: none;" type="file" />
-            </div>
-        </div>
-    </div>
-    <script>
+<button class="btn btn-secondary" id="export-btn"><i class="bi bi-download"></i> Export to TXT</button>
+<button class="btn btn-secondary" id="import-btn"><i class="bi bi-upload"></i> Import from TXT</button>
+<input accept=".txt" id="import-file" style="display: none;" type="file"/>
+</div>
+</div>
+</div>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const inputText = document.getElementById('input-text');
             const outputPreview = document.getElementById('output-preview');
@@ -287,14 +273,12 @@
             const wordCountEl = document.getElementById('word-count');
             const themeToggle = document.getElementById('theme-toggle');
             const toolbar = document.querySelector('.toolbar');
-
             const saveDraftBtn = document.getElementById('save-draft-btn');
             const loadDraftBtn = document.getElementById('load-draft-btn');
             const exportBtn = document.getElementById('export-btn');
             const importBtn = document.getElementById('import-btn');
             const importFile = document.getElementById('import-file');
             const loadSampleBtn = document.getElementById('load-sample-btn');
-
             const samples = [
                 {
                     name: "Tech Announcement",
@@ -313,9 +297,7 @@
                     content: `# Motivation Monday\n\nYour only limit is your mind. Believe in yourself and what you can achieve. **Consistency is key**.\n\n---\n\n> آپ کی واحد حد آپ کا ذہن ہے۔\n\nخود پر اور اپنی صلاحیتوں پر یقین رکھیں۔ *کامیابی کا راز مستقل مزاجی میں ہے۔*\n\n#Motivation #Success #Inspiration #کامیابی #حوصلہ`
                 }
             ];
-
             let currentSampleIndex = 0;
-
             function toBold(str) {
                 const boldMap = {
                     'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜', 'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥', 'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫', 'Y': '𝗬', 'Z': '𝗭',
@@ -324,7 +306,6 @@
                 };
                 return str.split('').map(char => boldMap[char] || char).join('');
             }
-
             function toItalic(str) {
                 const italicMap = {
                     'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐', 'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '�', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙', 'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟', 'Y': '𝘠', 'Z': '𝘡',
@@ -332,84 +313,63 @@
                 };
                 return str.split('').map(char => italicMap[char] || char).join('');
             }
-
             function toStrikethrough(str) {
                 return str.split('').map(char => char + '\u0336').join('');
             }
-
             function formatText(text) {
                 let formatted = text;
-
-                // GENERAL CLEANUP
                 formatted = formatted.replace(/\r\n/g, '\n').replace(/\n{3,}/g, "\n\n");
-
-                // BLOCKQUOTES (Already wrapped and RTL-aware) & LINES
                 formatted = formatted.replace(/^> (.*$)/gm, '❝ $1 ❞');
                 formatted = formatted.replace(/^(---|\*\*\*|___)\s*$/gm, '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬');
-
-                // ## HEADINGS (Corrected RTL symbols) ##
                 formatted = formatted.replace(/^###### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
                 formatted = formatted.replace(/^##### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
                 formatted = formatted.replace(/^#### (.*$)/gm, (m, p1) => `⬅ ${toBold(p1)} ➡`);
                 formatted = formatted.replace(/^### (.*$)/gm, (m, p1) => `⟪ ${toBold(p1)} ⟫`);
                 formatted = formatted.replace(/^## (.*$)/gm, (m, p1) => `◆ ${toBold(p1)} ◆`);
                 formatted = formatted.replace(/^# (.*$)/gm, (m, p1) => `★ ${toBold(p1)} ★`);
-
-                // ## BOLD: **text** (Corrected RTL symbols) ##
                 formatted = formatted.replace(/\*\*(.*?)\*\*/g, (match, content) => {
                     if (!content.trim()) return '';
                     const converted = toBold(content);
-                    // If it's Urdu, use ➤ and its mirror ◀.
                     return converted === content ? `◀ ${content} ▶` : converted;
                 });
-
-                // ## ITALIC: *text* or _text* (Symbol is symmetrical) ##
+                const HASHTAG_UNDERSCORE = '⸨U⸩';
+                formatted = formatted.replace(/#([^\s#]+)/g, m => m.replace(/_/g, HASHTAG_UNDERSCORE));
                 formatted = formatted.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
                     const content = p1 || p2;
                     if (!content.trim()) return '';
                     const converted = toItalic(content);
                     return converted === content ? `✧ ${content} ✧` : converted;
                 });
-
-                // STRIKETHROUGH (Works for all scripts, no change needed)
+                formatted = formatted.replace(new RegExp(HASHTAG_UNDERSCORE, 'g'), '_');
                 formatted = formatted.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
-
-                // LISTS (Wrapping these would make them hard to read, so they are unchanged)
                 formatted = formatted.replace(/^\s*[-*+]\s+(.*$)/gm, '• $1');
                 formatted = formatted.replace(/^\s*(\d+)\.\s+(.*$)/gm, (m, num, rest) => {
                     const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
                     const n = parseInt(num, 10);
                     return (n >= 0 && n <= 20) ? `${circled[n]} ${rest}` : `${num}. ${rest}`;
                 });
-
                 return formatted.trim();
             }
-
             function updateOutput() {
                 const text = inputText.value;
                 const formatted = formatText(text);
                 outputPreview.textContent = formatted;
-
                 const chars = text.length;
                 const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
                 charCountEl.textContent = `Characters: ${chars}`;
                 wordCountEl.textContent = `Words: ${words}`;
             }
-
             function applyFormat(format) {
                 const start = inputText.selectionStart;
                 const end = inputText.selectionEnd;
                 const text = inputText.value;
                 const selectedText = text.substring(start, end);
-
                 if (!selectedText) {
                     alert('Please select text to format.');
                     return;
                 }
-
                 let markup;
                 let newText;
-
                 switch (format) {
                     case 'bold':
                         markup = '**';
@@ -432,13 +392,10 @@
                     default:
                         return;
                 }
-
                 inputText.value = text.substring(0, start) + newText + text.substring(end);
                 updateOutput();
             }
-
             inputText.addEventListener('input', updateOutput);
-
             copyBtn.addEventListener('click', () => {
                 if (!outputPreview.textContent) return;
                 navigator.clipboard.writeText(outputPreview.textContent).then(() => {
@@ -452,19 +409,16 @@
                     console.error('Copy failed', err);
                 });
             });
-
             clearBtn.addEventListener('click', () => {
                 inputText.value = '';
                 updateOutput();
             });
-
             toolbar.addEventListener('click', (e) => {
                 const button = e.target.closest('button[data-format]');
                 if (button) {
                     applyFormat(button.dataset.format);
                 }
             });
-
             themeToggle.addEventListener('click', () => {
                 const currentTheme = document.documentElement.getAttribute('data-theme');
                 if (currentTheme === 'dark') {
@@ -477,18 +431,15 @@
                     localStorage.setItem('theme', 'dark');
                 }
             });
-
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark') {
                 document.documentElement.setAttribute('data-theme', 'dark');
                 themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
             }
-
             saveDraftBtn.addEventListener('click', () => {
                 localStorage.setItem('linkedinFormatterDraft', inputText.value);
                 alert('Draft saved locally in your browser.');
             });
-
             loadDraftBtn.addEventListener('click', () => {
                 const draft = localStorage.getItem('linkedinFormatterDraft');
                 if (draft) {
@@ -499,7 +450,6 @@
                     alert('No saved draft found.');
                 }
             });
-
             exportBtn.addEventListener('click', () => {
                 if (!inputText.value) {
                     alert('Nothing to export.');
@@ -514,13 +464,10 @@
                 link.click();
                 document.body.removeChild(link);
             });
-
             importBtn.addEventListener('click', () => importFile.click());
-
             importFile.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     inputText.value = e.target.result;
@@ -533,35 +480,32 @@
                 reader.readAsText(file);
                 event.target.value = '';
             });
-
             loadSampleBtn.addEventListener('click', () => {
                 inputText.value = samples[currentSampleIndex].content;
                 updateOutput();
                 alert(`Loaded Sample: "${samples[currentSampleIndex].name}"`);
                 currentSampleIndex = (currentSampleIndex + 1) % samples.length;
             });
-
             updateOutput();
         });
     </script>
-    <script type="module">
-        import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
-        const swUrl = './sw.js';
-        const wb = new Workbox(swUrl);
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
-        wb.addEventListener('waiting', () => {
-            console.log('A new service worker is waiting to activate.');
-            wb.messageSW({ type: 'SKIP_WAITING' });
-        });
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
 
-        wb.addEventListener('controlling', () => {
-            console.log('The new service worker is now in control. Reloading page for updates...');
-            window.location.reload();
-        });
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
 
-        wb.register();
-    </script>
-</body>
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
 
+  wb.register();
+</script></body>
 </html>
