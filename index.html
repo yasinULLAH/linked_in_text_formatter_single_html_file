@@ -334,7 +334,7 @@
                 // ## HEADINGS (Corrected RTL symbols) ##
                 formatted = formatted.replace(/^###### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
                 formatted = formatted.replace(/^##### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
-                formatted = formatted.replace(/^#### (.*$)/gm, (m, p1) => toBold(p1));
+                formatted = formatted.replace(/^#### (.*$)/gm, (m, p1) => `⬅ ${toBold(p1)} ➡`);
                 formatted = formatted.replace(/^### (.*$)/gm, (m, p1) => `⟪ ${toBold(p1)} ⟫`);
                 formatted = formatted.replace(/^## (.*$)/gm, (m, p1) => `◆ ${toBold(p1)} ◆`);
                 formatted = formatted.replace(/^# (.*$)/gm, (m, p1) => `★ ${toBold(p1)} ★`);
