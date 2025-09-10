@@ -319,6 +319,7 @@
             }
             function formatText(text) {
                 let formatted = text;
+                formatted = formatted.replace(/—/g, '-');
                 formatted = formatted.replace(/\r\n/g, '\n').replace(/\n{3,}/g, "\n\n");
                 formatted = formatted.replace(/^> (.*$)/gm, '❝ $1 ❞');
                 formatted = formatted.replace(/^(---|\*\*\*|___)\s*$/gm, '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬');
