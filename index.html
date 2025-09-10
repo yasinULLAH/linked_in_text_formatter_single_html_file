@@ -110,7 +110,8 @@
         textarea,
         .preview {
             width: 100%;
-            min-height: 60%;
+            /*min-height: 60%;*/
+            min-height: calc(100% - 6%); /* Subtract 9% of parent height */
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1rem;
@@ -489,7 +490,6 @@
             updateOutput();
         });
     </script>
-
 <script type="module">
   import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
