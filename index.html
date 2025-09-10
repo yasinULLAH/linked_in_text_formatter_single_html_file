@@ -110,8 +110,7 @@
         textarea,
         .preview {
             width: 100%;
-            /*min-height: 60%;*/
-            min-height: calc(100% - 6%); /* Subtract 9% of parent height */
+            min-height: calc(100% - 6%);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 1rem;
@@ -318,39 +317,78 @@
                 return str.split('').map(char => char + '\u0336').join('');
             }
             function formatText(text) {
-                let formatted = text;
-                formatted = formatted.replace(/—/g, '-');
-                formatted = formatted.replace(/\r\n/g, '\n').replace(/\n{3,}/g, "\n\n");
-                formatted = formatted.replace(/^> (.*$)/gm, '❝ $1 ❞');
-                formatted = formatted.replace(/^(---|\*\*\*|___)\s*$/gm, '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬');
-                formatted = formatted.replace(/^###### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
-                formatted = formatted.replace(/^##### (.*$)/gm, (m, p1) => `◀ ${toBold(p1)} ▶`);
-                formatted = formatted.replace(/^#### (.*$)/gm, (m, p1) => `⬅ ${toBold(p1)} ➡`);
-                formatted = formatted.replace(/^### (.*$)/gm, (m, p1) => `⟪ ${toBold(p1)} ⟫`);
-                formatted = formatted.replace(/^## (.*$)/gm, (m, p1) => `◆ ${toBold(p1)} ◆`);
-                formatted = formatted.replace(/^# (.*$)/gm, (m, p1) => `★ ${toBold(p1)} ★`);
-                formatted = formatted.replace(/\*\*(.*?)\*\*/g, (match, content) => {
-                    if (!content.trim()) return '';
-                    const converted = toBold(content);
-                    return converted === content ? `◀ ${content} ▶` : converted;
+                const processParagraphInlineStyles = (line) => {
+                    let processed = line;
+                    processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
+                    processed = processed.replace(/^\*\*(.*?)\*\*$/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◀ ${content} ▶` : converted;
+                    });
+                    processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◆ ${content} ◆` : converted;
+                    });
+                    const HASHTAG_UNDERSCORE = '⸨U⸩';
+                    processed = processed.replace(/#([^\s#]+)/g, m => m.replace(/_/g, HASHTAG_UNDERSCORE));
+                    processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
+                        const content = p1 || p2;
+                        if (!content.trim()) return '';
+                        const converted = toItalic(content);
+                        return converted === content ? `✧ ${content} ✧` : converted;
+                    });
+                    processed = processed.replace(new RegExp(HASHTAG_UNDERSCORE, 'g'), '_');
+                    return processed;
+                };
+                const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
+                const processedLines = lines.map(line => {
+                    if (line.match(/^# (.*$)/)) {
+                        let content = line.substring(2);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `★ ${toBold(content)} ★`;
+                    }
+                    if (line.match(/^## (.*$)/)) {
+                        let content = line.substring(3);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `◆ ${toBold(content)} ◆`;
+                    }
+                    if (line.match(/^### (.*$)/)) {
+                        let content = line.substring(4);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `⟪ ${toBold(content)} ⟫`;
+                    }
+                    if (line.match(/^#### (.*$)/)) {
+                        let content = line.substring(5);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `⬅ ${toBold(content)} ➡`;
+                    }
+                    if (line.match(/^(#####|######) (.*$)/)) {
+                        let content = line.startsWith('######') ? line.substring(7) : line.substring(6);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `◀ ${toBold(content)} ▶`;
+                    }
+                    if (line.match(/^> (.*$)/)) {
+                        const content = line.substring(2);
+                        return `❝ ${processParagraphInlineStyles(content)} ❞`;
+                    }
+                    if (line.match(/^(---|\*\*\*|___)\s*$/)) {
+                        return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+                    }
+                    if (line.match(/^\s*[-*+]\s+(.*$)/)) {
+                        const content = line.replace(/^\s*[-*+]\s+/, '');
+                        return `• ${processParagraphInlineStyles(content)}`;
+                    }
+                    if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
+                        const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
+                        const rest = line.replace(/^\s*(\d+)\.\s+/, '');
+                        const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
+                        const content = processParagraphInlineStyles(rest);
+                        return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
+                    }
+                    return processParagraphInlineStyles(line);
                 });
-                const HASHTAG_UNDERSCORE = '⸨U⸩';
-                formatted = formatted.replace(/#([^\s#]+)/g, m => m.replace(/_/g, HASHTAG_UNDERSCORE));
-                formatted = formatted.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
-                    const content = p1 || p2;
-                    if (!content.trim()) return '';
-                    const converted = toItalic(content);
-                    return converted === content ? `✧ ${content} ✧` : converted;
-                });
-                formatted = formatted.replace(new RegExp(HASHTAG_UNDERSCORE, 'g'), '_');
-                formatted = formatted.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
-                formatted = formatted.replace(/^\s*[-*+]\s+(.*$)/gm, '• $1');
-                formatted = formatted.replace(/^\s*(\d+)\.\s+(.*$)/gm, (m, num, rest) => {
-                    const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
-                    const n = parseInt(num, 10);
-                    return (n >= 0 && n <= 20) ? `${circled[n]} ${rest}` : `${num}. ${rest}`;
-                });
-                return formatted.trim();
+                return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
             }
             function updateOutput() {
                 const text = inputText.value;
@@ -491,6 +529,7 @@
             updateOutput();
         });
     </script>
+
 <script type="module">
   import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
