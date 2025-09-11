@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Advanced LinkedIn Text Formatter</title>
+<meta content="A powerful tool to format your LinkedIn posts with bold, italic, lists, and special symbols to make your content stand out. Supports both English and Urdu text." name="description"/>
+<meta content="linkedin formatter, text formatter, linkedin post editor, bold text, italic text, urdu linkedin post, Yasin Ullah, Pakistan" name="keywords"/>
+<meta content="Yasin Ullah, Pakistan" name="author"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<style>
+        :root {
+            --bg-color: #f8f9fa;
+            --text-color: #212529;
+            --card-bg: #ffffff;
+            --border-color: #dee2e6;
+            --primary-color: #0a66c2;
+            --primary-hover: #004182;
+            --secondary-color: #6c757d;
+            --secondary-hover: #5a6268;
+            --danger-color: #dc3545;
+            --danger-hover: #c82333;
+            --font-primary: Calibri, 'Inter', sans-serif;
+            --font-urdu: Calibri, 'Noto Nastaliq Urdu', serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #e9e9e9;
+            --card-bg: #2c2c2c;
+            --border-color: #444;
+            --primary-color: #0e76a8;
+            --primary-hover: #1e90ff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            color: var(--primary-color);
+        }
+
+        .theme-switcher {
+            font-size: 1.5rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+            color: var(--text-color);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .card h2 {
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        textarea,
+        .preview {
+            width: 100%;
+            min-height: calc(100% - 6%);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            resize: vertical;
+            font-family: var(--font-primary), var(--font-urdu);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.2);
+        }
+
+        .preview {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            flex-grow: 1;
+        }
+
+        .toolbar,
+        .main-actions,
+        .data-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease-in-out;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-hover);
+        }
+
+        .btn-tool {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-tool:hover {
+            background-color: var(--bg-color);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .main-actions {
+            justify-content: flex-end;
+            margin-bottom: 0;
+            margin-top: 1rem;
+        }
+
+        .status-bar {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .data-management {
+            margin-top: 6rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+<link href="manifest.json" rel="manifest"/>
+<link href="favicon.ico" rel="icon" type="image/x-icon"/>
+</head>
+<body>
+<div class="container">
+<header>
+<h1>LinkedIn Formatter</h1>
+<button aria-label="Toggle dark mode" class="theme-switcher" id="theme-toggle">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+</header>
+<div class="main-content">
+<div class="card">
+<h2>Input</h2>
+<div class="toolbar">
+<button class="btn btn-tool" data-format="bold" title="Bold"><i class="bi bi-type-bold"></i></button>
+<button class="btn btn-tool" data-format="italic" title="Italic"><i class="bi bi-type-italic"></i></button>
+<button class="btn btn-tool" data-format="strikethrough" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
+<button class="btn btn-tool" data-format="bullet" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+<button class="btn btn-tool" data-format="number" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+</div>
+<textarea dir="auto" id="input-text" placeholder="Start writing or paste your LinkedIn post here..."></textarea>
+<div class="status-bar">
+<span id="char-count">Characters: 0</span> | <span id="word-count">Words: 0</span>
+</div>
+<div class="main-actions">
+<button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear</button>
+<button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
+                        Result</button>
+</div>
+</div>
+<div class="card">
+<h2>Preview</h2>
+<div class="preview" dir="auto" id="output-preview"></div>
+</div>
+</div>
+<div class="data-management card">
+<h3>Content Management</h3>
+<div class="data-actions">
+<button class="btn btn-secondary" id="load-sample-btn"><i class="bi bi-lightbulb"></i> Load
+                    Sample</button>
+<button class="btn btn-secondary" id="save-draft-btn"><i class="bi bi-save"></i> Save Draft</button>
+<button class="btn btn-secondary" id="load-draft-btn"><i class="bi bi-folder-symlink"></i> Load
+                    Draft</button>
+<button class="btn btn-secondary" id="export-btn"><i class="bi bi-download"></i> Export to TXT</button>
+<button class="btn btn-secondary" id="import-btn"><i class="bi bi-upload"></i> Import from TXT</button>
+<input accept=".txt" id="import-file" style="display: none;" type="file"/>
+</div>
+</div>
+</div>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputText = document.getElementById('input-text');
+            const outputPreview = document.getElementById('output-preview');
+            const copyBtn = document.getElementById('copy-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const charCountEl = document.getElementById('char-count');
+            const wordCountEl = document.getElementById('word-count');
+            const themeToggle = document.getElementById('theme-toggle');
+            const toolbar = document.querySelector('.toolbar');
+            const saveDraftBtn = document.getElementById('save-draft-btn');
+            const loadDraftBtn = document.getElementById('load-draft-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const importBtn = document.getElementById('import-btn');
+            const importFile = document.getElementById('import-file');
+            const loadSampleBtn = document.getElementById('load-sample-btn');
+            const samples = [
+                {
+                    name: "Tech Announcement",
+                    content: `# Exciting News!\n\nWe're thrilled to launch our new app, **ConnectSphere**! It's designed to revolutionize how professionals network and collaborate.\n\n*Key Features:*\n* AI-powered matchmaking\n* Real-time project collaboration\n* Integrated skill-building workshops\n\nThis is a huge milestone for our team. A big thank you to everyone involved!\n\n#Tech #Innovation #Networking #AppLaunch`
+                },
+                {
+                    name: "Career Advice",
+                    content: `## My Top 3 Career Growth Tips\n\nNavigating your career path can be challenging. Here's what I've learned:\n\n1. **Never Stop Learning:** The world is constantly changing. Stay curious and invest in new skills.\n2. **Build Genuine Relationships:** Your network is your net worth. Focus on helping others, and it will come back to you.\n3. **Embrace Failure:** Don't be afraid to take risks. Failure is just a stepping stone to success.\n\n_What's the best career advice you've ever received?_ Let me know in the comments!\n\n#CareerAdvice #ProfessionalDevelopment #GrowthMindset`
+                },
+                {
+                    name: "Project Update",
+                    content: `### Q3 Project Update: Green-Energy Initiative\n\nQuick update on our progress:\n\n- Phase 1 (Research & Feasibility) is **100% complete**.\n- Phase 2 (Prototype Development) is underway, currently at ~~40%~~ *60% progress*.\n- Secured initial funding from two new investors.\n\n> "The best way to predict the future is to create it."\n\nWe're on track to meet our year-end goals. More updates to come!\n\n#ProjectManagement #Sustainability #GreenEnergy #Progress`
+                },
+                {
+                    name: "Bilingual Motivational Post",
+                    content: `# Motivation Monday\n\nYour only limit is your mind. Believe in yourself and what you can achieve. **Consistency is key**.\n\n---\n\n> آپ کی واحد حد آپ کا ذہن ہے۔\n\nخود پر اور اپنی صلاحیتوں پر یقین رکھیں۔ *کامیابی کا راز مستقل مزاجی میں ہے۔*\n\n#Motivation #Success #Inspiration #کامیابی #حوصلہ`
+                }
+            ];
+            let currentSampleIndex = 0;
+            function toBold(str) {
+                const boldMap = {
+                    'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜', 'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥', 'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫', 'Y': '𝗬', 'Z': '𝗭',
+                    'a': '𝗮', 'b': '𝗯', 'c': '𝗰', 'd': '𝗱', 'e': '𝗲', 'f': '𝗳', 'g': '𝗴', 'h': '𝗵', 'i': '𝗶', 'j': '𝗷', 'k': '𝗸', 'l': '𝗹', 'm': '𝗺', 'n': '𝗻', 'o': '𝗼', 'p': '𝗽', 'q': '𝗾', 'r': '𝗿', 's': '𝘀', 't': '𝘁', 'u': '𝘂', 'v': '𝘃', 'w': '𝘄', 'x': '𝘅', 'y': '𝘆', 'z': '𝘇',
+                    '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰', '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
+                };
+                return str.split('').map(char => boldMap[char] || char).join('');
+            }
+            function toItalic(str) {
+                const italicMap = {
+                    'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐', 'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '�', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙', 'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟', 'Y': '𝘠', 'Z': '𝘡',
+                    'a': '𝘢', 'b': '𝘣', 'c': '𝘤', 'd': '𝘥', 'e': '𝘦', 'f': '𝘧', 'g': '𝘨', 'h': '𝘩', 'i': '𝘪', 'j': '𝘫', 'k': '𝘬', 'l': '𝘭', 'm': '𝘮', 'n': '𝘯', 'o': '𝘰', 'p': '𝘱', 'q': '𝘲', 'r': '𝘳', 's': '𝘴', 't': '𝘵', 'u': '𝘶', 'v': '𝘷', 'w': '𝘸', 'x': '𝘹', 'y': '𝘺', 'z': '𝘻'
+                };
+                return str.split('').map(char => italicMap[char] || char).join('');
+            }
+            function toStrikethrough(str) {
+                return str.split('').map(char => char + '\u0336').join('');
+            }
+            function formatText(text) {
+                const processParagraphInlineStyles = (line) => {
+                    let processed = line;
+                    processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
+                    processed = processed.replace(/^\*\*(.*?)\*\*$/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◀ ${content} ▶` : converted;
+                    });
+                    processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◆ ${content} ◆` : converted;
+                    });
+                    const HASHTAG_UNDERSCORE = '⸨U⸩';
+                    processed = processed.replace(/#([^\s#]+)/g, m => m.replace(/_/g, HASHTAG_UNDERSCORE));
+                    processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
+                        const content = p1 || p2;
+                        if (!content.trim()) return '';
+                        const converted = toItalic(content);
+                        return converted === content ? `✧ ${content} ✧` : converted;
+                    });
+                    processed = processed.replace(new RegExp(HASHTAG_UNDERSCORE, 'g'), '_');
+                    return processed;
+                };
+                const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
+                const processedLines = lines.map(line => {
+                    if (line.match(/^# (.*$)/)) {
+                        let content = line.substring(2);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `★ ${toBold(content)} ★`;
+                    }
+                    if (line.match(/^## (.*$)/)) {
+                        let content = line.substring(3);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `◆ ${toBold(content)} ◆`;
+                    }
+                    if (line.match(/^### (.*$)/)) {
+                        let content = line.substring(4);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `⟪ ${toBold(content)} ⟫`;
+                    }
+                    if (line.match(/^#### (.*$)/)) {
+                        let content = line.substring(5);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `⬅ ${toBold(content)} ➡`;
+                    }
+                    if (line.match(/^(#####|######) (.*$)/)) {
+                        let content = line.startsWith('######') ? line.substring(7) : line.substring(6);
+                        content = content.replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `◀ ${toBold(content)} ▶`;
+                    }
+                    if (line.match(/^> (.*$)/)) {
+                        const content = line.substring(2);
+                        return `❝ ${processParagraphInlineStyles(content)} ❞`;
+                    }
+                    if (line.match(/^(---|\*\*\*|___)\s*$/)) {
+                        return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+                    }
+                    if (line.match(/^\s*[-*+]\s+(.*$)/)) {
+                        const content = line.replace(/^\s*[-*+]\s+/, '');
+                        return `• ${processParagraphInlineStyles(content)}`;
+                    }
+                    if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
+                        const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
+                        const rest = line.replace(/^\s*(\d+)\.\s+/, '');
+                        const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
+                        const content = processParagraphInlineStyles(rest);
+                        return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
+                    }
+                    return processParagraphInlineStyles(line);
+                });
+                return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
+            }
+            function updateOutput() {
+                const text = inputText.value;
+                const formatted = formatText(text);
+                outputPreview.textContent = formatted;
+                const chars = text.length;
+                const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+                charCountEl.textContent = `Characters: ${chars}`;
+                wordCountEl.textContent = `Words: ${words}`;
+            }
+            function applyFormat(format) {
+                const start = inputText.selectionStart;
+                const end = inputText.selectionEnd;
+                const text = inputText.value;
+                const selectedText = text.substring(start, end);
+                if (!selectedText) {
+                    alert('Please select text to format.');
+                    return;
+                }
+                let markup;
+                let newText;
+                switch (format) {
+                    case 'bold':
+                        markup = '**';
+                        newText = `${markup}${selectedText}${markup}`;
+                        break;
+                    case 'italic':
+                        markup = '*';
+                        newText = `${markup}${selectedText}${markup}`;
+                        break;
+                    case 'strikethrough':
+                        markup = '~~';
+                        newText = `${markup}${selectedText}${markup}`;
+                        break;
+                    case 'bullet':
+                        newText = selectedText.split('\n').map(line => `* ${line}`).join('\n');
+                        break;
+                    case 'number':
+                        newText = selectedText.split('\n').map((line, index) => `${index + 1}. ${line}`).join('\n');
+                        break;
+                    default:
+                        return;
+                }
+                inputText.value = text.substring(0, start) + newText + text.substring(end);
+                updateOutput();
+            }
+            inputText.addEventListener('input', updateOutput);
+            copyBtn.addEventListener('click', () => {
+                if (!outputPreview.textContent) return;
+                navigator.clipboard.writeText(outputPreview.textContent).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Copied!`;
+                    setTimeout(() => {
+                        copyBtn.innerHTML = originalText;
+                    }, 2000);
+                }).catch(err => {
+                    alert('Failed to copy text.');
+                    console.error('Copy failed', err);
+                });
+            });
+            clearBtn.addEventListener('click', () => {
+                inputText.value = '';
+                updateOutput();
+            });
+            toolbar.addEventListener('click', (e) => {
+                const button = e.target.closest('button[data-format]');
+                if (button) {
+                    applyFormat(button.dataset.format);
+                }
+            });
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                if (currentTheme === 'dark') {
+                    document.documentElement.removeAttribute('data-theme');
+                    themeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+            }
+            saveDraftBtn.addEventListener('click', () => {
+                localStorage.setItem('linkedinFormatterDraft', inputText.value);
+                alert('Draft saved locally in your browser.');
+            });
+            loadDraftBtn.addEventListener('click', () => {
+                const draft = localStorage.getItem('linkedinFormatterDraft');
+                if (draft) {
+                    inputText.value = draft;
+                    updateOutput();
+                    alert('Draft loaded successfully.');
+                } else {
+                    alert('No saved draft found.');
+                }
+            });
+            exportBtn.addEventListener('click', () => {
+                if (!inputText.value) {
+                    alert('Nothing to export.');
+                    return;
+                }
+                const blob = new Blob([inputText.value], { type: 'text/plain;charset=utf-8' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                const date = new Date().toISOString().slice(0, 10);
+                link.download = `linkedin-post-${date}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+            importBtn.addEventListener('click', () => importFile.click());
+            importFile.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    inputText.value = e.target.result;
+                    updateOutput();
+                    alert('File imported successfully.');
+                };
+                reader.onerror = () => {
+                    alert('Error reading file.');
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            });
+            loadSampleBtn.addEventListener('click', () => {
+                inputText.value = samples[currentSampleIndex].content;
+                updateOutput();
+                alert(`Loaded Sample: "${samples[currentSampleIndex].name}"`);
+                currentSampleIndex = (currentSampleIndex + 1) % samples.length;
+            });
+            updateOutput();
+        });
+    </script>
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
+
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
+
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
+
+  wb.register();
+</script></body>
+</html>
