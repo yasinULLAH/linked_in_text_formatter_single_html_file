@@ -14,7 +14,9 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://unpkg.com/compromise@latest/builds/compromise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/compromise@14.13.0/builds/compromise.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js"></script>
 <style>
         :root {
             --font-primary: Calibri, 'Inter', sans-serif;
@@ -405,78 +407,106 @@
                 return "Very Difficult (Graduate)";
             }
             function formatText(text) {
-    const processParagraphInlineStyles = (line) => {
-        let processed = line;
-        processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
-        processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
-            if (!content.trim()) return '';
-            const converted = toBold(content);
-            return converted === content ? `◆ ${content} ◆` : converted;
-        });
-        processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
-            const content = p1 || p2;
-            if (!content.trim()) return '';
-            const converted = toItalic(content);
-            return converted === content ? `✧ ${content} ✧` : converted;
-        });
-        return processed;
-    };
-    const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
-    const processedLines = lines.map(line => {
-        if (line.match(/^# (.*$)/)) {
-            let content = line.substring(2);
-            return `★ ${processParagraphInlineStyles(content)} ★`;
-        }
-        if (line.match(/^## (.*$)/)) {
-            let content = line.substring(3);
-            return `◆ ${processParagraphInlineStyles(content)} ◆`;
-        }
-        if (line.match(/^### (.*$)/)) {
-            let content = line.substring(4);
-            return `⟪ ${processParagraphInlineStyles(content)} ⟫`;
-        }
-        if (line.match(/^#### (.*$)/)) {
-            let content = line.substring(5);
-            return `⬅ ${processParagraphInlineStyles(content)} ➡`;
-        }
-        if (line.match(/^(#####|######) (.*$)/)) {
-            let content = line.replace(/^#+\s*/, '');
-            return `◀ ${processParagraphInlineStyles(content)} ▶`;
-        }
-        if (line.match(/^> (.*$)/)) {
-            const content = line.substring(2);
-            return `❝ ${processParagraphInlineStyles(content)} ❞`;
-        }
-        if (line.match(/^(---|\*\*\*|___)\s*$/)) {
-            return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
-        }
-        if (line.match(/^\s*[-*+]\s+(.*$)/)) {
-            const content = line.replace(/^\s*[-*+]\s+/, '');
-            return `• ${processParagraphInlineStyles(content)}`;
-        }
-        if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
-            const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
-            const rest = line.replace(/^\s*(\d+)\.\s+/, '');
-            const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
-            const content = processParagraphInlineStyles(rest);
-            return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
-        }
-        return processParagraphInlineStyles(line);
-    });
-    return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
-}
-            function getHashtagSuggestions(text) {
-                const doc = nlp(text);
-                const nouns = doc.nouns().out('array');
-                const verbs = doc.verbs().out('array');
-                const adjectives = doc.adjectives().out('array');
-                const keywords = [...new Set([...nouns, ...verbs, ...adjectives])];
-                const currentHashtags = new Set((text.match(/#[\p{L}\p{N}_]+/gu) || []).map(tag => tag.substring(1).toLowerCase()));
-                return keywords
-                    .filter(word => word.length > 2 && !currentHashtags.has(word.toLowerCase()))
-                    .map(word => `#${word.replace(/\s+/g, '')}`)
-                    .slice(0, 10);
+                const processParagraphInlineStyles = (line) => {
+                    let processed = line;
+                    processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
+                    processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◆ ${content} ◆` : converted;
+                    });
+                    processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
+                        const content = p1 || p2;
+                        if (!content.trim()) return '';
+                        const converted = toItalic(content);
+                        return converted === content ? `✧ ${content} ✧` : converted;
+                    });
+                    return processed;
+                };
+                const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
+                const processedLines = lines.map(line => {
+                    if (line.match(/^# (.*$)/)) {
+                        let content = line.substring(2);
+                        return `★ ${processParagraphInlineStyles(content)} ★`;
+                    }
+                    if (line.match(/^## (.*$)/)) {
+                        let content = line.substring(3);
+                        return `◆ ${processParagraphInlineStyles(content)} ◆`;
+                    }
+                    if (line.match(/^### (.*$)/)) {
+                        let content = line.substring(4);
+                        return `⟪ ${processParagraphInlineStyles(content)} ⟫`;
+                    }
+                    if (line.match(/^#### (.*$)/)) {
+                        let content = line.substring(5);
+                        return `⬅ ${processParagraphInlineStyles(content)} ➡`;
+                    }
+                    if (line.match(/^(#####|######) (.*$)/)) {
+                        let content = line.replace(/^#+\s*/, '');
+                        return `◀ ${processParagraphInlineStyles(content)} ▶`;
+                    }
+                    if (line.match(/^> (.*$)/)) {
+                        const content = line.substring(2);
+                        return `❝ ${processParagraphInlineStyles(content)} ❞`;
+                    }
+                    if (line.match(/^(---|\*\*\*|___)\s*$/)) {
+                        return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+                    }
+                    if (line.match(/^\s*[-*+]\s+(.*$)/)) {
+                        const content = line.replace(/^\s*[-*+]\s+/, '');
+                        return `• ${processParagraphInlineStyles(content)}`;
+                    }
+                    if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
+                        const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
+                        const rest = line.replace(/^\s*(\d+)\.\s+/, '');
+                        const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
+                        const content = processParagraphInlineStyles(rest);
+                        return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
+                    }
+                    return processParagraphInlineStyles(line);
+                });
+                return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
             }
+function getHashtagSuggestions(text) {
+    const currentHashtags = new Set((text.match(/#[\p{L}\p{N}_]+/gu) || []).map(tag => tag.substring(1).toLowerCase()));
+
+    // Check for Arabic script characters (used in Urdu)
+    if (/[\u0600-\u06FF]/.test(text)) {
+        // Use a simpler, more reliable method for Urdu
+        const cleanedText = text
+            .replace(/[#*_~`\->۔،؟\r\n|\n]/g, ' ') // Remove markdown, punctuation, and newlines
+            .toLowerCase();
+
+        const words = cleanedText.split(/\s+/).filter(w => w.length > 3 && !/^[0-9]/.test(w));
+
+        if (words.length === 0) return [];
+
+        const frequency = words.reduce((acc, word) => {
+            acc[word] = (acc[word] || 0) + 1;
+            return acc;
+        }, {});
+
+        const sortedWords = Object.keys(frequency)
+            .sort((a, b) => frequency[b] - frequency[a]);
+
+        return sortedWords
+            .filter(word => !currentHashtags.has(word))
+            .slice(0, 10)
+            .map(word => `#${word}`);
+    } else {
+        // Use the original NLP method for English and other Latin scripts
+        const doc = nlp(text);
+        const nouns = doc.nouns().out('array');
+        const verbs = doc.verbs().out('array');
+        const adjectives = doc.adjectives().out('array');
+        const keywords = [...new Set([...nouns, ...verbs, ...adjectives])];
+
+        return keywords
+            .filter(word => word.length > 2 && !currentHashtags.has(word.toLowerCase()))
+            .map(word => `#${word.replace(/\s+/g, '')}`)
+            .slice(0, 10);
+    }
+}
             function updateOutput() {
                 const text = inputText.value;
                 const formattedText = formatText(text);
@@ -774,12 +804,12 @@
             }
             clearBtn.addEventListener('click', () => {
                 //if (confirm('Are you sure you want to clear the text?')) {
-                    inputText.value = '';
-                    updateOutput();
-                    updateHistory('');
-                    loadedDraftId = null;
-                    updateDraftBtn.classList.add('hidden');
-                    saveDraftBtn.classList.remove('hidden');
+                inputText.value = '';
+                updateOutput();
+                updateHistory('');
+                loadedDraftId = null;
+                updateDraftBtn.classList.add('hidden');
+                saveDraftBtn.classList.remove('hidden');
                 //}
             });
             copyBtn.addEventListener('click', () => {
@@ -1024,21 +1054,20 @@
                     return;
                 }
                 const docDefinition = generatePdfContent(drafts);
-                alert("PDF export functionality would typically use a library like pdfMake. This is a placeholder for the PDF generation logic. Exporting all drafts as a PDF is not directly possible without a full pdfMake library integration. Content prepared for PDF.");
-                console.log("PDF Content (all drafts):", docDefinition);
+                pdfMake.createPdf(docDefinition).download('all-drafts.pdf');
             });
             exportSelectedDraftsBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 const selectedDraftIds = Array.from(document.querySelectorAll('.draft-select-checkbox:checked'))
                     .map(checkbox => parseInt(checkbox.dataset.id, 10));
+
                 if (selectedDraftIds.length === 0) {
                     alert("No drafts selected for PDF export.");
                     return;
                 }
                 const selectedDrafts = drafts.filter(draft => selectedDraftIds.includes(draft.id));
                 const docDefinition = generatePdfContent(selectedDrafts);
-                alert("PDF export functionality would typically use a library like pdfMake. This is a placeholder for the PDF generation logic. Exporting selected drafts as a PDF is not directly possible without a full pdfMake library integration. Content prepared for PDF.");
-                console.log("PDF Content (selected drafts):", docDefinition);
+                pdfMake.createPdf(docDefinition).download('selected-drafts.pdf');
             });
             document.querySelectorAll('.modal-close-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
