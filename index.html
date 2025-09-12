@@ -1072,13 +1072,29 @@
                 link.click();
                 URL.revokeObjectURL(link.href);
             };
-            document.getElementById('export-txt-btn').addEventListener('click', (e) => { e.preventDefault(); exportFile(outputPreview.textContent, 'linkedin-post.txt', 'text/plain;charset=utf-8'); });
+            document.getElementById('export-txt-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
+                let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
+                if (!titleLine) titleLine = "Untitled";
+                if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
+                const date = new Date().toISOString().slice(0, 10);
+                exportFile(outputPreview.textContent, `${titleLine} - ${date}.txt`, 'text/plain;charset=utf-8');
+            });
             document.getElementById('export-md-btn').addEventListener('click', (e) => { e.preventDefault(); exportFile(inputText.value, 'linkedin-post.md', 'text/markdown;charset=utf-8'); });
             document.getElementById('export-png-btn').addEventListener('click', (e) => {
                 e.preventDefault();
-                html2canvas(document.getElementById('output-preview'), { useCORS: true }).then(canvas => {
+                html2canvas(document.getElementById('output-preview'), {
+                    useCORS: true,
+                    scale: 3
+                }).then(canvas => {
+                    const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
+                    let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
+                    if (!titleLine) titleLine = "Untitled";
+                    if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
+                    const date = new Date().toISOString().slice(0, 10);
                     const link = document.createElement('a');
-                    link.download = 'linkedin-preview.png';
+                    link.download = `${titleLine} - ${date}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 });
@@ -1233,11 +1249,11 @@
                         bolditalics: 'Roboto-MediumItalic.ttf'
                     },
                     NotoNastaliqUrdu: {
-    normal: 'NotoNastaliqUrdu-Regular.ttf',
-    bold: 'NotoNastaliqUrdu-Bold.ttf',
-    italics: 'NotoNastaliqUrdu-Regular.ttf',
-    bolditalics: 'NotoNastaliqUrdu-Bold.ttf'
-}
+                        normal: 'NotoNastaliqUrdu-Regular.ttf',
+                        bold: 'NotoNastaliqUrdu-Bold.ttf',
+                        italics: 'NotoNastaliqUrdu-Regular.ttf',
+                        bolditalics: 'NotoNastaliqUrdu-Bold.ttf'
+                    }
                 };
                 applySettings();
 

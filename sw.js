@@ -66,11 +66,27 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "785f7c7137b2bff4d893c5792839def7"
+        "revision": "85628d2f5c6601cd5c9d8a5a315b92a5"
     },
     {
         "url": "manifest.json",
         "revision": "0cc368b38cab335f44f3f0ec6c9bb905"
+    },
+    {
+        "url": "NotoNastaliqUrdu-Bold.ttf",
+        "revision": "0204aebe7b41dc5091f28628d427e455"
+    },
+    {
+        "url": "NotoNastaliqUrdu-Medium.ttf",
+        "revision": "98d52a2c6f7a8d671f352145d2205c56"
+    },
+    {
+        "url": "NotoNastaliqUrdu-Regular.ttf",
+        "revision": "4537f856ebf024967b0314068f623d4d"
+    },
+    {
+        "url": "NotoNastaliqUrdu-SemiBold.ttf",
+        "revision": "c01bbd4250a9d3547a7df33f510e3370"
     },
     {
         "url": "offline.html",
@@ -82,7 +98,23 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "fea3f17853c72be0eb967686f93486a9"
+        "revision": "cc5ea28bf6c55a38a97d2a1387e4a2fc"
+    },
+    {
+        "url": "fonts/NotoNastaliqUrdu-Bold.ttf",
+        "revision": "0204aebe7b41dc5091f28628d427e455"
+    },
+    {
+        "url": "fonts/NotoNastaliqUrdu-Medium.ttf",
+        "revision": "98d52a2c6f7a8d671f352145d2205c56"
+    },
+    {
+        "url": "fonts/NotoNastaliqUrdu-Regular.ttf",
+        "revision": "4537f856ebf024967b0314068f623d4d"
+    },
+    {
+        "url": "fonts/NotoNastaliqUrdu-SemiBold.ttf",
+        "revision": "c01bbd4250a9d3547a7df33f510e3370"
     }
 ]);
 
