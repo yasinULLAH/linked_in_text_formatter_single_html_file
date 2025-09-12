@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Advanced LinkedIn Text Formatter</title>
+<meta content="A powerful tool to format LinkedIn posts with a full draft management system, auto-saving, undo/redo, emoji picker, and advanced analytics." name="description"/>
+<meta content="linkedin formatter, text formatter, draft management, auto-save, linkedin post editor, Yasin Ullah, Pakistan" name="keywords"/>
+<meta content="Yasin Ullah, Pakistan" name="author"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+        :root {
+            --font-primary: 'Inter', sans-serif;
+            --font-urdu: 'Noto Nastaliq Urdu', serif;
+        }
+
+        body {
+            font-family: var(--font-primary);
+        }
+
+        .preview-content {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        html.dark ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb {
+            background: #718096;
+        }
+
+        html.dark ::-webkit-scrollbar-thumb:hover {
+            background: #a0aec0;
+        }
+
+        textarea {
+            font-family: var(--font-primary), var(--font-urdu);
+        }
+    </style>
+<link href="manifest.json" rel="manifest"/>
+<link href="favicon.ico" rel="icon" type="image/x-icon"/>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
+<div class="container mx-auto p-4 lg:p-6">
+<header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+<h1 class="text-3xl font-bold text-blue-600 dark:text-blue-500">Advanced LinkedIn Formatter</h1>
+<button class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="theme-toggle">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+</header>
+<main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
+<h2 class="text-xl font-semibold mb-4">Input</h2>
+<div class="toolbar flex flex-wrap items-center gap-2 mb-4 border-b dark:border-gray-700 pb-4">
+<button class="btn-tool" data-format="bold" title="Bold (Ctrl+B)"><i class="bi bi-type-bold"></i></button>
+<button class="btn-tool" data-format="italic" title="Italic (Ctrl+I)"><i class="bi bi-type-italic"></i></button>
+<button class="btn-tool" data-format="strikethrough" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
+<button class="btn-tool" data-format="bullet" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+<button class="btn-tool" data-format="number" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+<button class="btn-tool" id="emoji-picker-btn" title="Insert Emoji"><i class="bi bi-emoji-smile"></i></button>
+<div class="border-l dark:border-gray-600 pl-2 ml-2">
+<button class="btn-tool" id="undo-btn" title="Undo (Ctrl+Z)"><i class="bi bi-arrow-counterclockwise"></i></button>
+<button class="btn-tool" id="redo-btn" title="Redo (Ctrl+Y)"><i class="bi bi-arrow-clockwise"></i></button>
+</div>
+</div>
+<textarea class="w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none" dir="auto" id="input-text" placeholder="Start writing your powerful LinkedIn post..."></textarea>
+<div class="flex justify-between items-center text-sm mt-3 text-gray-500 dark:text-gray-400">
+<div>
+<span id="char-count">Chars: 0</span> |
+                        <span id="word-count">Words: 0</span> |
+                        <span id="hashtag-count">Hashtags: 0</span>
+</div>
+<span class="text-xs italic" id="autosave-status"></span>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
+<h2 class="text-xl font-semibold mb-4">Preview &amp; Actions</h2>
+<div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto" dir="auto" id="output-preview">
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+<button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
+                        Result</button>
+<button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear Text</button>
+<button class="btn btn-secondary col-span-2 sm:col-span-1" id="share-linkedin-btn"><i class="bi bi-linkedin"></i> Share on LinkedIn</button>
+</div>
+</div>
+</main>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mt-6">
+<h3 class="text-xl font-semibold mb-4">Content Management</h3>
+<div class="flex flex-wrap gap-3">
+<button class="btn btn-primary" id="save-draft-btn"><i class="bi bi-save"></i> Save New Draft</button>
+<button class="btn btn-secondary" id="draft-manager-btn"><i class="bi bi-collection"></i> Manage
+                    Drafts</button>
+<button class="btn btn-secondary" id="backup-btn"><i class="bi bi-cloud-download"></i> Backup
+                    All</button>
+<button class="btn btn-secondary" id="restore-btn"><i class="bi bi-cloud-upload"></i> Restore</button>
+<input accept=".json" class="hidden" id="restore-file" type="file"/>
+<button class="btn btn-secondary" id="load-template-btn"><i class="bi bi-lightbulb"></i> Load
+                    Template</button>
+<button class="btn btn-secondary" onclick="document.getElementById('import-file').click()"><i class="bi bi-upload"></i> Import .txt</button>
+<input accept=".txt" class="hidden" id="import-file" type="file"/>
+<div class="relative">
+<button class="btn btn-secondary" id="export-dropdown-btn"><i class="bi bi-download"></i> Export As
+                        <i class="bi bi-chevron-down ml-2"></i></button>
+<div class="hidden absolute bottom-full mb-2 w-full bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-10" id="export-options">
+<a class="export-option" href="#" id="export-txt-btn">Text (.txt)</a>
+<a class="export-option" href="#" id="export-md-btn">Markdown (.md)</a>
+<a class="export-option" href="#" id="export-png-btn">Image (.png)</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="draft-manager-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold">Draft Manager</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-6 overflow-y-auto" id="drafts-list">
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="emoji-picker-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[70vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold">Select Emoji</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-5 grid grid-cols-8 gap-2 overflow-y-auto" id="emoji-grid">
+</div>
+</div>
+</div>
+<script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#0a66c2',
+                        'secondary': '#6c757d',
+                        'danger': '#dc3545',
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .btn {
+            @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-transform duration-200 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
+        }
+
+        .btn-primary {
+            @apply bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500;
+        }
+
+        .btn-secondary {
+            @apply bg-gray-500 text-white hover:bg-gray-600 focus:ring-gray-400;
+        }
+
+        .btn-danger {
+            @apply bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+        }
+
+        .btn-tool {
+            @apply p-2 rounded-md bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500;
+        }
+
+        .modal-close-btn {
+            @apply text-3xl font-bold text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition;
+        }
+
+        .export-option {
+            @apply block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left;
+        }
+
+        textarea#input-text,
+        #output-preview {
+            font-family: calibri;
+        }
+    </style>
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputText = document.getElementById('input-text');
+            const outputPreview = document.getElementById('output-preview');
+            const copyBtn = document.getElementById('copy-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const charCountEl = document.getElementById('char-count');
+            const wordCountEl = document.getElementById('word-count');
+            const hashtagCountEl = document.getElementById('hashtag-count');
+            const themeToggle = document.getElementById('theme-toggle');
+            const saveDraftBtn = document.getElementById('save-draft-btn');
+            const draftManagerBtn = document.getElementById('draft-manager-btn');
+            const draftManagerModal = document.getElementById('draft-manager-modal');
+            const draftsListContainer = document.getElementById('drafts-list');
+            const importFile = document.getElementById('import-file');
+            const loadTemplateBtn = document.getElementById('load-template-btn');
+            const shareLinkedInBtn = document.getElementById('share-linkedin-btn');
+            const undoBtn = document.getElementById('undo-btn');
+            const redoBtn = document.getElementById('redo-btn');
+            const autosaveStatus = document.getElementById('autosave-status');
+            const emojiPickerBtn = document.getElementById('emoji-picker-btn');
+            const emojiPickerModal = document.getElementById('emoji-picker-modal');
+            const emojiGrid = document.getElementById('emoji-grid');
+            const exportDropdownBtn = document.getElementById('export-dropdown-btn');
+            const exportOptions = document.getElementById('export-options');
+            let drafts = JSON.parse(localStorage.getItem('linkedinFormatterDrafts')) || [];
+            let history = [''];
+            let historyIndex = 0;
+            let autosaveTimeout;
+            const templates = [
+                { name: "Project Update", content: `🚀 Project Update: [Project Name] 🚀\n\nThrilled to share our latest progress!\n\n✅ Milestone 1: Completed\n✅ Milestone 2: In Progress\n\nBig thanks to the team for their hard work. More to come!\n\n#[ProjectName] #[Update] #[Teamwork]` },
+                { name: "Hiring Announcement", content: `🌟 We're Hiring! 🌟\n\nOur team is growing and we're looking for a talented [Job Title] to join us.\n\nIf you're passionate about [Industry/Skill] and want to make an impact, we'd love to hear from you.\n\nApply here: [Link]\n\n#[Hiring] #[JobOpening] #[Career]#[YourCompany]` },
+                { name: "Sharing an Article", content: `Found this insightful article on [Topic].\n\nKey takeaway for me was: "[Quote or Insight]"\n\nHighly recommend a read!\n\n[Article Link]\n\n#[Reading] #[Learning] #[Topic]` }
+            ];
+            let currentTemplateIndex = 0;
+            const emojis = ['🚀', '💡', '🔥', '✅', '🌟', '📈', '🤝', '🎯', '🎉', '💪', '🧠', '💼', '🔗', '💬', '👇', '➡️', '🌍', '💻', '👨‍💻', '👩‍💻', '🤔', '🙌', '💯', '😊'];
+            function toBold(str) { return str.split('').map(char => ({ 'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜', 'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥', 'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫', 'Y': '𝗬', 'Z': '𝗭', 'a': '𝗮', 'b': '𝗯', 'c': '𝗰', 'd': '𝗱', 'e': '𝗲', 'f': '𝗳', 'g': '𝗴', 'h': '𝗵', 'i': '𝗶', 'j': '𝗷', 'k': '𝗸', 'l': '𝗹', 'm': '𝗺', 'n': '𝗻', 'o': '𝗼', 'p': '𝗽', 'q': '𝗾', 'r': '𝗿', 's': '𝘀', 't': '𝘁', 'u': '𝘂', 'v': '𝘃', 'w': '𝘄', 'x': '𝘅', 'y': '𝘆', 'z': '𝘇', '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰', '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵' }[char] || char)).join(''); }
+            function toItalic(str) { return str.split('').map(char => ({ 'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐', 'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '𝘕', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙', 'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟', 'Y': '𝘠', 'Z': '𝘡', 'a': '𝘢', 'b': '𝘣', 'c': '𝘤', 'd': '𝘥', 'e': '𝘦', 'f': '𝘧', 'g': '𝘨', 'h': '𝘩', 'i': '𝘪', 'j': '𝘫', 'k': '𝘬', 'l': '𝘭', 'm': '𝘮', 'n': '𝘯', 'o': '𝘰', 'p': '𝘱', 'q': '𝘲', 'r': '𝘳', 's': '𝘴', 't': '𝘵', 'u': '𝘶', 'v': '𝘷', 'w': '𝘸', 'x': '𝘹', 'y': '𝘺', 'z': '𝘻' }[char] || char)).join(''); }
+            // Backup drafts + autosave into JSON
+            document.getElementById('backup-btn').addEventListener('click', () => {
+                const data = {
+                    drafts: drafts,
+                    wip: localStorage.getItem('linkedinFormatter_wip') || ''
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `linkedin-formatter-backup-${new Date().toISOString().slice(0, 10)}.json`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                alert("Backup created successfully!");
+            });
+
+            // Restore from JSON backup
+            document.getElementById('restore-btn').addEventListener('click', () => {
+                document.getElementById('restore-file').click();
+            });
+
+            document.getElementById('restore-file').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.drafts) {
+                            drafts = data.drafts;
+                            saveDraftsToStorage();
+                        }
+                        if (data.wip) {
+                            localStorage.setItem('linkedinFormatter_wip', data.wip);
+                        }
+                        alert("Backup restored successfully!");
+                    } catch (err) {
+                        alert("Invalid backup file.");
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            });
+
+            function toStrikethrough(str) { return str.split('').map(char => char + '\u0336').join(''); }
+            function formatText(text) {
+                const processParagraphInlineStyles = (line) => {
+                    let processed = line;
+                    processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
+                    processed = processed.replace(/^\*\*(.*?)\*\*$/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◀ ${content} ▶` : converted;
+                    });
+                    processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
+                        if (!content.trim()) return '';
+                        const converted = toBold(content);
+                        return converted === content ? `◆ ${content} ◆` : converted;
+                    });
+                    const HASHTAG_UNDERSCORE = '⸨U⸩';
+                    processed = processed.replace(/#([^\s#]+)/g, m => m.replace(/_/g, HASHTAG_UNDERSCORE));
+                    processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
+                        const content = p1 || p2;
+                        if (!content.trim()) return '';
+                        const converted = toItalic(content);
+                        return converted === content ? `✧ ${content} ✧` : converted;
+                    });
+                    processed = processed.replace(new RegExp(HASHTAG_UNDERSCORE, 'g'), '_');
+                    return processed;
+                };
+                const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
+                const processedLines = lines.map(line => {
+                    if (line.match(/^# (.*$)/)) {
+                        let content = line.substring(2).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `★ ${toBold(content)} ★`;
+                    }
+                    if (line.match(/^## (.*$)/)) {
+                        let content = line.substring(3).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `◆ ${toBold(content)} ◆`;
+                    }
+                    if (line.match(/^### (.*$)/)) {
+                        let content = line.substring(4).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `⟪ ${toBold(content)} ⟫`;
+                    }
+                    if (line.match(/^#### (.*$)/)) {
+                        let content = line.substring(5).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `⬅ ${toBold(content)} ➡`;
+                    }
+                    if (line.match(/^(#####|######) (.*$)/)) {
+                        let content = line.replace(/^#+\s*/, '').replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
+                        return `◀ ${toBold(content)} ▶`;
+                    }
+                    if (line.match(/^> (.*$)/)) {
+                        const content = line.substring(2);
+                        return `❝ ${processParagraphInlineStyles(content)} ❞`;
+                    }
+                    if (line.match(/^(---|\*\*\*|___)\s*$/)) {
+                        return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+                    }
+                    if (line.match(/^\s*[-*+]\s+(.*$)/)) {
+                        const content = line.replace(/^\s*[-*+]\s+/, '');
+                        return `• ${processParagraphInlineStyles(content)}`;
+                    }
+                    if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
+                        const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
+                        const rest = line.replace(/^\s*(\d+)\.\s+/, '');
+                        const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
+                        const content = processParagraphInlineStyles(rest);
+                        return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
+                    }
+                    return processParagraphInlineStyles(line);
+                });
+                return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
+            }
+            function updateOutput() {
+                const text = inputText.value;
+                outputPreview.textContent = formatText(text);
+                const charCount = text.length;
+                const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+                const hashtagCount = text.match(/#[a-zA-Z0-9_]+/g)?.length || 0;
+                charCountEl.textContent = `Chars: ${charCount}`;
+                wordCountEl.textContent = `Words: ${wordCount}`;
+                hashtagCountEl.textContent = `Hashtags: ${hashtagCount}`;
+                if (charCount > 3000) {
+                    charCountEl.classList.add('text-red-500', 'font-bold');
+                } else if (charCount > 2800) {
+                    charCountEl.classList.add('text-yellow-500', 'font-semibold');
+                    charCountEl.classList.remove('text-red-500', 'font-bold');
+                } else {
+                    charCountEl.classList.remove('text-red-500', 'font-bold', 'text-yellow-500', 'font-semibold');
+                }
+            }
+            function triggerAutosave() {
+                clearTimeout(autosaveTimeout);
+                autosaveTimeout = setTimeout(() => {
+                    localStorage.setItem('linkedinFormatter_wip', inputText.value);
+                    autosaveStatus.textContent = `Saved. ${new Date().toLocaleTimeString()}`;
+                    setTimeout(() => autosaveStatus.textContent = '', 2000);
+                }, 1500);
+            }
+            function updateHistory(text) {
+                if (text === history[historyIndex]) return;
+                history = history.slice(0, historyIndex + 1);
+                history.push(text);
+                historyIndex++;
+                updateUndoRedoButtons();
+            }
+            function undo() {
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    inputText.value = history[historyIndex];
+                    updateOutput();
+                    updateUndoRedoButtons();
+                }
+            }
+            function redo() {
+                if (historyIndex < history.length - 1) {
+                    historyIndex++;
+                    inputText.value = history[historyIndex];
+                    updateOutput();
+                    updateUndoRedoButtons();
+                }
+            }
+            function updateUndoRedoButtons() {
+                undoBtn.disabled = historyIndex <= 0;
+                redoBtn.disabled = historyIndex >= history.length - 1;
+                undoBtn.classList.toggle('opacity-50', undoBtn.disabled);
+                redoBtn.classList.toggle('opacity-50', redoBtn.disabled);
+            }
+            function saveDraftsToStorage() {
+                localStorage.setItem('linkedinFormatterDrafts', JSON.stringify(drafts));
+            }
+            function renderDrafts() {
+                draftsListContainer.innerHTML = '';
+                if (drafts.length === 0) {
+                    draftsListContainer.innerHTML = '<p class="text-gray-500 italic">No saved drafts yet. Save one to get started!</p>';
+                    return;
+                }
+                drafts.forEach((draft, index) => {
+                    const draftEl = document.createElement('div');
+                    draftEl.className = 'flex items-center justify-between p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md';
+                    draftEl.innerHTML = `
+                    <div>
+                        <p class="font-semibold">${draft.name}</p>
+                        <p class="text-sm text-gray-500">${new Date(draft.id).toLocaleString()} - ${draft.content.substring(0, 40)}...</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn-tool" data-action="load" data-index="${index}" title="Load"><i class="bi bi-box-arrow-in-down"></i></button>
+                        <button class="btn-tool" data-action="rename" data-index="${index}" title="Rename"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn-tool text-red-500" data-action="delete" data-index="${index}" title="Delete"><i class="bi bi-trash"></i></button>
+                    </div>
+                `;
+                    draftsListContainer.appendChild(draftEl);
+                });
+            }
+            themeToggle.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                    themeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                    themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                }
+            });
+            inputText.addEventListener('input', () => {
+                updateOutput();
+                triggerAutosave();
+                updateHistory(inputText.value);
+            });
+            document.querySelector('.toolbar').addEventListener('click', e => {
+                const button = e.target.closest('button[data-format]');
+                if (!button) return;
+                const format = button.dataset.format;
+                const start = inputText.selectionStart;
+                const end = inputText.selectionEnd;
+                const selected = inputText.value.substring(start, end);
+                if (!selected) return;
+                let replacement = '';
+                if (format === 'bold') replacement = `**${selected}**`;
+                else if (format === 'italic') replacement = `*${selected}*`;
+                else if (format === 'strikethrough') replacement = `~~${selected}~~`;
+                else if (format === 'bullet') replacement = selected.split('\n').map(l => `* ${l}`).join('\n');
+                else if (format === 'number') replacement = selected.split('\n').map((l, i) => `${i + 1}. ${l}`).join('\n');
+                inputText.setRangeText(replacement, start, end, 'end');
+                inputText.focus();
+                updateOutput();
+                updateHistory(inputText.value);
+            });
+            inputText.addEventListener('keydown', e => {
+                if (e.ctrlKey) {
+                    let handled = true;
+                    if (e.key === 'b') applyFormatShortcut('**');
+                    else if (e.key === 'i') applyFormatShortcut('*');
+                    else if (e.key === 'z') { e.preventDefault(); undo(); }
+                    else if (e.key === 'y') { e.preventDefault(); redo(); }
+                    else handled = false;
+                    if (handled) e.preventDefault();
+                }
+            });
+            function applyFormatShortcut(markup) {
+                const start = inputText.selectionStart;
+                const end = inputText.selectionEnd;
+                const selected = inputText.value.substring(start, end);
+                if (!selected) return;
+                inputText.setRangeText(`${markup}${selected}${markup}`, start, end, 'end');
+                updateOutput();
+                updateHistory(inputText.value);
+            }
+            clearBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to clear the text?')) {
+                    inputText.value = '';
+                    updateOutput();
+                    updateHistory('');
+                }
+            });
+            copyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(outputPreview.textContent).then(() => {
+                    const originalText = copyBtn.innerHTML;
+                    copyBtn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Copied!`;
+                    setTimeout(() => copyBtn.innerHTML = originalText, 2000);
+                });
+            });
+            shareLinkedInBtn.addEventListener('click', () => {
+                const text = encodeURIComponent(outputPreview.textContent);
+                const url = `https://www.linkedin.com/feed/?shareActive=true&text=${text}`;
+                window.open(url, '_blank');
+            });
+            undoBtn.addEventListener('click', undo);
+            redoBtn.addEventListener('click', redo);
+            saveDraftBtn.addEventListener('click', () => {
+                const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
+                let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
+                if (!titleLine) titleLine = "Draft";
+                if (titleLine.length > 30) titleLine = titleLine.substring(0, 30) + "...";
+                const date = new Date().toLocaleDateString();
+                const name = `${titleLine} - ${date}`;
+                if (inputText.value.trim()) {
+                    drafts.unshift({ id: Date.now(), name: name, content: inputText.value });
+                    saveDraftsToStorage();
+                    alert(`Draft saved: "${name}"`);
+                } else {
+                    alert("Nothing to save.");
+                }
+            });
+            draftManagerBtn.addEventListener('click', () => {
+                renderDrafts();
+                draftManagerModal.classList.remove('hidden');
+                draftManagerModal.classList.add('flex');
+            });
+            draftsListContainer.addEventListener('click', e => {
+                const button = e.target.closest('button[data-action]');
+                if (!button) return;
+                const index = parseInt(button.dataset.index, 10);
+                const action = button.dataset.action;
+                if (action === 'load') {
+                    if (confirm('This will replace your current text. Continue?')) {
+                        inputText.value = drafts[index].content;
+                        updateOutput();
+                        updateHistory(inputText.value);
+                        draftManagerModal.classList.add('hidden');
+                    }
+                } else if (action === 'delete') {
+                    if (confirm(`Are you sure you want to delete "${drafts[index].name}"?`)) {
+                        drafts.splice(index, 1);
+                        saveDraftsToStorage();
+                        renderDrafts();
+                    }
+                } else if (action === 'rename') {
+                    const newName = prompt('Enter new name:', drafts[index].name);
+                    if (newName) {
+                        drafts[index].name = newName;
+                        saveDraftsToStorage();
+                        renderDrafts();
+                    }
+                }
+            });
+            loadTemplateBtn.addEventListener('click', () => {
+                if (inputText.value && !confirm('This will replace current text. Continue?')) return;
+                const template = templates[currentTemplateIndex];
+                inputText.value = template.content;
+                updateOutput();
+                updateHistory(inputText.value);
+                alert(`Loaded Template: "${template.name}"`);
+                currentTemplateIndex = (currentTemplateIndex + 1) % templates.length;
+            });
+            importFile.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => { inputText.value = e.target.result; updateOutput(); updateHistory(inputText.value); };
+                reader.readAsText(file);
+            });
+            exportDropdownBtn.addEventListener('click', () => exportOptions.classList.toggle('hidden'));
+            document.body.addEventListener('click', (e) => {
+                if (!exportDropdownBtn.contains(e.target) && !exportOptions.contains(e.target)) {
+                    exportOptions.classList.add('hidden');
+                }
+            });
+            const exportFile = (content, fileName, type) => {
+                const blob = new Blob([content], { type });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = fileName;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            };
+            document.getElementById('export-txt-btn').addEventListener('click', (e) => { e.preventDefault(); exportFile(outputPreview.textContent, 'linkedin-post.txt', 'text/plain;charset=utf-8'); });
+            document.getElementById('export-md-btn').addEventListener('click', (e) => { e.preventDefault(); exportFile(inputText.value, 'linkedin-post.md', 'text/markdown;charset=utf-8'); });
+            document.getElementById('export-png-btn').addEventListener('click', (e) => {
+                e.preventDefault();
+                html2canvas(document.getElementById('output-preview')).then(canvas => {
+                    const link = document.createElement('a');
+                    link.download = 'linkedin-preview.png';
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                });
+            });
+            document.querySelectorAll('.modal-close-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    btn.closest('.fixed').classList.add('hidden');
+                });
+            });
+            emojiPickerBtn.addEventListener('click', () => {
+                emojiPickerModal.classList.remove('hidden');
+                emojiPickerModal.classList.add('flex');
+            });
+            emojiGrid.addEventListener('click', e => {
+                if (e.target.tagName === 'BUTTON') {
+                    const emoji = e.target.textContent;
+                    const start = inputText.selectionStart;
+                    const end = inputText.selectionEnd;
+                    inputText.setRangeText(emoji, start, end, 'end');
+                    inputText.focus();
+                    updateOutput();
+                    updateHistory(inputText.value);
+                    emojiPickerModal.classList.add('hidden');
+                }
+            });
+            function initialize() {
+                if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                    themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                } else {
+                    themeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                }
+                const wip = localStorage.getItem('linkedinFormatter_wip');
+                if (wip) {
+                    inputText.value = wip;
+                }
+                emojis.forEach(emoji => {
+                    const btn = document.createElement('button');
+                    btn.className = 'text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition';
+                    btn.textContent = emoji;
+                    emojiGrid.appendChild(btn);
+                });
+                updateOutput();
+                updateHistory(inputText.value);
+                updateUndoRedoButtons();
+            }
+            initialize();
+        });
+    </script>
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
+
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
+
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
+
+  wb.register();
+</script></body>
+</html>

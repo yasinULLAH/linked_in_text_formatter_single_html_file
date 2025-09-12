@@ -14,10 +14,11 @@
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://unpkg.com/compromise@latest/builds/compromise.min.js"></script>
 <style>
         :root {
-            --font-primary: 'Inter', sans-serif;
-            --font-urdu: 'Noto Nastaliq Urdu', serif;
+            --font-primary: Calibri, 'Inter', sans-serif;
+            --font-urdu: Calibri, 'Noto Nastaliq Urdu', serif;
         }
 
         body {
@@ -70,9 +71,14 @@
 <div class="container mx-auto p-4 lg:p-6">
 <header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
 <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-500">Advanced LinkedIn Formatter</h1>
+<div class="flex items-center gap-4">
+<button class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="settings-btn" title="Settings">
+<i class="bi bi-gear-fill"></i>
+</button>
 <button class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="theme-toggle">
 <i class="bi bi-moon-stars-fill"></i>
 </button>
+</div>
 </header>
 <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
@@ -90,22 +96,33 @@
 </div>
 </div>
 <textarea class="w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none" dir="auto" id="input-text" placeholder="Start writing your powerful LinkedIn post..."></textarea>
-<div class="flex justify-between items-center text-sm mt-3 text-gray-500 dark:text-gray-400">
+<div class="flex flex-wrap justify-between items-center text-sm mt-3 text-gray-500 dark:text-gray-400 gap-2">
 <div>
 <span id="char-count">Chars: 0</span> |
                         <span id="word-count">Words: 0</span> |
-                        <span id="hashtag-count">Hashtags: 0</span>
+                        <span id="hashtag-count">Hashtags: 0</span> |
+                        <span id="readability-score">Readability: N/A</span>
 </div>
 <span class="text-xs italic" id="autosave-status"></span>
+</div>
+<div class="mt-4">
+<h4 class="font-semibold mb-2">Hashtag Suggestions:</h4>
+<div class="flex flex-wrap gap-2" id="hashtag-suggestions">
+</div>
 </div>
 </div>
 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
 <h2 class="text-xl font-semibold mb-4">Preview &amp; Actions</h2>
-<div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto" dir="auto" id="output-preview">
+<div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto relative" dir="auto" id="output-preview">
+</div>
+<div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
+<span class="hidden" id="read-more-hint">LinkedIn typically truncates posts after ~3 lines or
+                        200-250 characters. Consider adding a "Read More" or "..." here.</span>
 </div>
 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
 <button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
-                        Result</button>
+                        Result
+                    </button>
 <button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear Text</button>
 <button class="btn btn-secondary col-span-2 sm:col-span-1" id="share-linkedin-btn"><i class="bi bi-linkedin"></i> Share on LinkedIn</button>
 </div>
@@ -115,14 +132,25 @@
 <h3 class="text-xl font-semibold mb-4">Content Management</h3>
 <div class="flex flex-wrap gap-3">
 <button class="btn btn-primary" id="save-draft-btn"><i class="bi bi-save"></i> Save New Draft</button>
+<button class="btn btn-primary hidden" id="update-draft-btn"><i class="bi bi-arrow-repeat"></i> Update
+                    Draft</button>
 <button class="btn btn-secondary" id="draft-manager-btn"><i class="bi bi-collection"></i> Manage
-                    Drafts</button>
+                    Drafts
+                </button>
 <button class="btn btn-secondary" id="backup-btn"><i class="bi bi-cloud-download"></i> Backup
-                    All</button>
+                    All
+                </button>
 <button class="btn btn-secondary" id="restore-btn"><i class="bi bi-cloud-upload"></i> Restore</button>
 <input accept=".json" class="hidden" id="restore-file" type="file"/>
-<button class="btn btn-secondary" id="load-template-btn"><i class="bi bi-lightbulb"></i> Load
-                    Template</button>
+<div class="relative">
+<button class="btn btn-secondary" id="template-dropdown-btn"><i class="bi bi-lightbulb"></i>
+                        Templates
+                        <i class="bi bi-chevron-down ml-2"></i></button>
+<div class="hidden absolute bottom-full mb-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-10" id="template-options">
+<div id="default-templates"></div>
+<a class="export-option border-t dark:border-gray-600 mt-1 pt-1" href="#" id="create-template-btn"><i class="bi bi-plus-circle"></i> Create New Template</a>
+</div>
+</div>
 <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()"><i class="bi bi-upload"></i> Import .txt</button>
 <input accept=".txt" class="hidden" id="import-file" type="file"/>
 <div class="relative">
@@ -132,18 +160,34 @@
 <a class="export-option" href="#" id="export-txt-btn">Text (.txt)</a>
 <a class="export-option" href="#" id="export-md-btn">Markdown (.md)</a>
 <a class="export-option" href="#" id="export-png-btn">Image (.png)</a>
+<a class="export-option" href="#" id="export-pdf-all-btn">All Drafts (.pdf)</a>
 </div>
 </div>
 </div>
 </div>
 </div>
 <div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="draft-manager-modal">
-<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
 <div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
 <h3 class="text-2xl font-semibold">Draft Manager</h3>
 <button class="modal-close-btn">×</button>
 </div>
-<div class="p-6 overflow-y-auto" id="drafts-list">
+<div class="p-4 border-b dark:border-gray-700 flex flex-wrap gap-2">
+<input class="flex-grow p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="draft-search" placeholder="Search drafts..." type="text"/>
+<select class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="draft-filter-tag">
+<option value="">All Categories</option>
+</select>
+<button class="btn btn-secondary" id="export-selected-drafts-btn"><i class="bi bi-box-arrow-up"></i>
+                    Export Selected (.pdf)</button>
+</div>
+<div class="p-6 overflow-y-auto flex-grow" id="drafts-list">
+</div>
+<div class="p-4 border-t dark:border-gray-700 flex justify-between items-center">
+<label class="flex items-center gap-2 text-sm">
+<input id="select-all-drafts" type="checkbox"/> Select All
+                </label>
+<button class="btn btn-danger" id="bulk-delete-drafts-btn"><i class="bi bi-trash"></i> Delete
+                    Selected</button>
 </div>
 </div>
 </div>
@@ -154,6 +198,51 @@
 <button class="modal-close-btn">×</button>
 </div>
 <div class="p-5 grid grid-cols-8 gap-2 overflow-y-auto" id="emoji-grid">
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="settings-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[70vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold">Settings</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-6 overflow-y-auto">
+<div class="mb-4">
+<label class="block text-sm font-medium mb-2" for="autosave-frequency">Autosave Frequency
+                        (seconds):</label>
+<input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="autosave-frequency" min="5" type="number" value="10"/>
+</div>
+<div class="mb-4">
+<label class="block text-sm font-medium mb-2" for="read-more-threshold">"Read More" Character
+                        Threshold:</label>
+<input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="read-more-threshold" min="50" type="number" value="250"/>
+</div>
+<div class="flex justify-end">
+<button class="btn btn-primary" id="save-settings-btn">Save Settings</button>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="create-template-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold" id="template-modal-title">Create New Template</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-6 flex-grow flex flex-col">
+<div class="mb-4">
+<label class="block text-sm font-medium mb-2" for="template-name">Template Name:</label>
+<input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="template-name" placeholder="e.g., Project Update, Hiring Post" type="text"/>
+</div>
+<div class="mb-4 flex-grow">
+<label class="block text-sm font-medium mb-2" for="template-content">Template Content:</label>
+<textarea class="w-full h-48 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 resize-none" id="template-content" placeholder="Enter your template content here..."></textarea>
+</div>
+<div class="flex justify-end gap-3">
+<button class="btn btn-secondary" id="delete-template-btn" style="display:none;"><i class="bi bi-trash"></i> Delete</button>
+<button class="btn btn-primary" id="save-template-btn">Save Template</button>
+</div>
 </div>
 </div>
 </div>
@@ -202,7 +291,7 @@
 
         textarea#input-text,
         #output-preview {
-            font-family: calibri;
+            font-family: var(--font-primary), var(--font-urdu);
         }
     </style>
 <script>
@@ -214,13 +303,24 @@
             const charCountEl = document.getElementById('char-count');
             const wordCountEl = document.getElementById('word-count');
             const hashtagCountEl = document.getElementById('hashtag-count');
+            const readabilityScoreEl = document.getElementById('readability-score');
             const themeToggle = document.getElementById('theme-toggle');
             const saveDraftBtn = document.getElementById('save-draft-btn');
+            const updateDraftBtn = document.getElementById('update-draft-btn');
             const draftManagerBtn = document.getElementById('draft-manager-btn');
             const draftManagerModal = document.getElementById('draft-manager-modal');
             const draftsListContainer = document.getElementById('drafts-list');
             const importFile = document.getElementById('import-file');
-            const loadTemplateBtn = document.getElementById('load-template-btn');
+            const templateDropdownBtn = document.getElementById('template-dropdown-btn');
+            const templateOptions = document.getElementById('template-options');
+            const defaultTemplatesContainer = document.getElementById('default-templates');
+            const createTemplateBtn = document.getElementById('create-template-btn');
+            const createTemplateModal = document.getElementById('create-template-modal');
+            const templateNameInput = document.getElementById('template-name');
+            const templateContentInput = document.getElementById('template-content');
+            const saveTemplateBtn = document.getElementById('save-template-btn');
+            const deleteTemplateBtn = document.getElementById('delete-template-btn');
+            const templateModalTitle = document.getElementById('template-modal-title');
             const shareLinkedInBtn = document.getElementById('share-linkedin-btn');
             const undoBtn = document.getElementById('undo-btn');
             const redoBtn = document.getElementById('redo-btn');
@@ -230,138 +330,160 @@
             const emojiGrid = document.getElementById('emoji-grid');
             const exportDropdownBtn = document.getElementById('export-dropdown-btn');
             const exportOptions = document.getElementById('export-options');
+            const readMoreHint = document.getElementById('read-more-hint');
+            const hashtagSuggestionsContainer = document.getElementById('hashtag-suggestions');
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModal = document.getElementById('settings-modal');
+            const autosaveFrequencyInput = document.getElementById('autosave-frequency');
+            const readMoreThresholdInput = document.getElementById('read-more-threshold');
+            const saveSettingsBtn = document.getElementById('save-settings-btn');
+            const draftSearch = document.getElementById('draft-search');
+            const draftFilterTag = document.getElementById('draft-filter-tag');
+            const selectAllDraftsCheckbox = document.getElementById('select-all-drafts');
+            const bulkDeleteDraftsBtn = document.getElementById('bulk-delete-drafts-btn');
+            const exportPdfAllBtn = document.getElementById('export-pdf-all-btn');
+            const exportSelectedDraftsBtn = document.getElementById('export-selected-drafts-btn');
             let drafts = JSON.parse(localStorage.getItem('linkedinFormatterDrafts')) || [];
+            let customTemplates = JSON.parse(localStorage.getItem('linkedinFormatterCustomTemplates')) || [];
             let history = [''];
             let historyIndex = 0;
             let autosaveTimeout;
-            const templates = [
+            let loadedDraftId = null;
+            let userSettings = JSON.parse(localStorage.getItem('linkedinFormatterSettings')) || {
+                autosaveFrequency: 10,
+                readMoreThreshold: 250
+            };
+            const defaultTemplates = [
                 { name: "Project Update", content: `🚀 Project Update: [Project Name] 🚀\n\nThrilled to share our latest progress!\n\n✅ Milestone 1: Completed\n✅ Milestone 2: In Progress\n\nBig thanks to the team for their hard work. More to come!\n\n#[ProjectName] #[Update] #[Teamwork]` },
                 { name: "Hiring Announcement", content: `🌟 We're Hiring! 🌟\n\nOur team is growing and we're looking for a talented [Job Title] to join us.\n\nIf you're passionate about [Industry/Skill] and want to make an impact, we'd love to hear from you.\n\nApply here: [Link]\n\n#[Hiring] #[JobOpening] #[Career]#[YourCompany]` },
-                { name: "Sharing an Article", content: `Found this insightful article on [Topic].\n\nKey takeaway for me was: "[Quote or Insight]"\n\nHighly recommend a read!\n\n[Article Link]\n\n#[Reading] #[Learning] #[Topic]` }
+                { name: "Sharing an Article", content: `Found this insightful article on [Topic].\n\nKey takeaway for me was: "[Quote or Insight]"\n\nHighly recommend a read!\n\n[Article Link]\n\n#[Reading] #[Learning] #[Topic]` },
+                { name: "Eid Mubarak Post", content: `🌙 Eid Mubarak to everyone celebrating! May this blessed occasion bring joy, peace, and prosperity to you and your loved ones. Wishing you a wonderful time filled with happiness and togetherness.\n\n#EidMubarak #EidAlAdha #Celebration #Joy #Pakistan` },
+                { name: "Pakistani Tech Industry Insight", content: `💡 Fascinating insights into Pakistan's growing tech industry! The innovation and talent emerging from our region are truly remarkable. Excited to see what the future holds.\n\nRead more: [Article Link]\n\n#PakistanTech #Innovation #Startups #DigitalPakistan #TechIndustry` }
             ];
-            let currentTemplateIndex = 0;
-            const emojis = ['🚀', '💡', '🔥', '✅', '🌟', '📈', '🤝', '🎯', '🎉', '💪', '🧠', '💼', '🔗', '💬', '👇', '➡️', '🌍', '💻', '👨‍💻', '👩‍💻', '🤔', '🙌', '💯', '😊'];
-            function toBold(str) { return str.split('').map(char => ({ 'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜', 'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥', 'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫', 'Y': '𝗬', 'Z': '𝗭', 'a': '𝗮', 'b': '𝗯', 'c': '𝗰', 'd': '𝗱', 'e': '𝗲', 'f': '𝗳', 'g': '𝗴', 'h': '𝗵', 'i': '𝗶', 'j': '𝗷', 'k': '𝗸', 'l': '𝗹', 'm': '𝗺', 'n': '𝗻', 'o': '𝗼', 'p': '𝗽', 'q': '𝗾', 'r': '𝗿', 's': '𝘀', 't': '𝘁', 'u': '𝘂', 'v': '𝘃', 'w': '𝘄', 'x': '𝘅', 'y': '𝘆', 'z': '𝘇', '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰', '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵' }[char] || char)).join(''); }
-            function toItalic(str) { return str.split('').map(char => ({ 'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐', 'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '𝘕', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙', 'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟', 'Y': '𝘠', 'Z': '𝘡', 'a': '𝘢', 'b': '𝘣', 'c': '𝘤', 'd': '𝘥', 'e': '𝘦', 'f': '𝘧', 'g': '𝘨', 'h': '𝘩', 'i': '𝘪', 'j': '𝘫', 'k': '𝘬', 'l': '𝘭', 'm': '𝘮', 'n': '𝘯', 'o': '𝘰', 'p': '𝘱', 'q': '𝘲', 'r': '𝘳', 's': '𝘴', 't': '𝘵', 'u': '𝘶', 'v': '𝘷', 'w': '𝘸', 'x': '𝘹', 'y': '𝘺', 'z': '𝘻' }[char] || char)).join(''); }
-            // Backup drafts + autosave into JSON
-            document.getElementById('backup-btn').addEventListener('click', () => {
-                const data = {
-                    drafts: drafts,
-                    wip: localStorage.getItem('linkedinFormatter_wip') || ''
-                };
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = `linkedin-formatter-backup-${new Date().toISOString().slice(0, 10)}.json`;
-                link.click();
-                URL.revokeObjectURL(link.href);
-                alert("Backup created successfully!");
-            });
-
-            // Restore from JSON backup
-            document.getElementById('restore-btn').addEventListener('click', () => {
-                document.getElementById('restore-file').click();
-            });
-
-            document.getElementById('restore-file').addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    try {
-                        const data = JSON.parse(e.target.result);
-                        if (data.drafts) {
-                            drafts = data.drafts;
-                            saveDraftsToStorage();
-                        }
-                        if (data.wip) {
-                            localStorage.setItem('linkedinFormatter_wip', data.wip);
-                        }
-                        alert("Backup restored successfully!");
-                    } catch (err) {
-                        alert("Invalid backup file.");
-                    }
-                };
-                reader.readAsText(file);
-                event.target.value = '';
-            });
-
-            function toStrikethrough(str) { return str.split('').map(char => char + '\u0336').join(''); }
-            function formatText(text) {
-                const processParagraphInlineStyles = (line) => {
-                    let processed = line;
-                    processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
-                    processed = processed.replace(/^\*\*(.*?)\*\*$/g, (match, content) => {
-                        if (!content.trim()) return '';
-                        const converted = toBold(content);
-                        return converted === content ? `◀ ${content} ▶` : converted;
-                    });
-                    processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
-                        if (!content.trim()) return '';
-                        const converted = toBold(content);
-                        return converted === content ? `◆ ${content} ◆` : converted;
-                    });
-                    const HASHTAG_UNDERSCORE = '⸨U⸩';
-                    processed = processed.replace(/#([^\s#]+)/g, m => m.replace(/_/g, HASHTAG_UNDERSCORE));
-                    processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
-                        const content = p1 || p2;
-                        if (!content.trim()) return '';
-                        const converted = toItalic(content);
-                        return converted === content ? `✧ ${content} ✧` : converted;
-                    });
-                    processed = processed.replace(new RegExp(HASHTAG_UNDERSCORE, 'g'), '_');
-                    return processed;
-                };
-                const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
-                const processedLines = lines.map(line => {
-                    if (line.match(/^# (.*$)/)) {
-                        let content = line.substring(2).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
-                        return `★ ${toBold(content)} ★`;
-                    }
-                    if (line.match(/^## (.*$)/)) {
-                        let content = line.substring(3).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
-                        return `◆ ${toBold(content)} ◆`;
-                    }
-                    if (line.match(/^### (.*$)/)) {
-                        let content = line.substring(4).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
-                        return `⟪ ${toBold(content)} ⟫`;
-                    }
-                    if (line.match(/^#### (.*$)/)) {
-                        let content = line.substring(5).replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
-                        return `⬅ ${toBold(content)} ➡`;
-                    }
-                    if (line.match(/^(#####|######) (.*$)/)) {
-                        let content = line.replace(/^#+\s*/, '').replace(/\*\*(.*?)\*\*/g, (m, p1) => toBold(p1));
-                        return `◀ ${toBold(content)} ▶`;
-                    }
-                    if (line.match(/^> (.*$)/)) {
-                        const content = line.substring(2);
-                        return `❝ ${processParagraphInlineStyles(content)} ❞`;
-                    }
-                    if (line.match(/^(---|\*\*\*|___)\s*$/)) {
-                        return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
-                    }
-                    if (line.match(/^\s*[-*+]\s+(.*$)/)) {
-                        const content = line.replace(/^\s*[-*+]\s+/, '');
-                        return `• ${processParagraphInlineStyles(content)}`;
-                    }
-                    if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
-                        const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
-                        const rest = line.replace(/^\s*(\d+)\.\s+/, '');
-                        const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
-                        const content = processParagraphInlineStyles(rest);
-                        return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
-                    }
-                    return processParagraphInlineStyles(line);
+            const emojis = ['🚀', '💡', '🔥', '✅', '🌟', '📈', '🤝', '🎯', '🎉', '💪', '🧠', '💼', '🔗', '💬', '👇', '➡️', '🌍', '💻', '👨‍💻', '👩‍💻', '🤔', '🙌', '💯', '😊', '🇵🇰', '🌙', '✨', '🤩', '🌸', '🌳', '🕊️', '❤️', '👍', '🙏', '🤲'];
+            function toBold(str) {
+                return str.split('').map(char => ({
+                    'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛', 'I': '𝗜', 'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣', 'Q': '𝗤', 'R': '𝗥', 'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫', 'Y': '𝗬', 'Z': '𝗭',
+                    'a': '𝗮', 'b': '𝗯', 'c': '𝗰', 'd': '𝗱', 'e': '𝗲', 'f': '𝗳', 'g': '𝗴', 'h': '𝗵', 'i': '𝗶', 'j': '𝗷', 'k': '𝗸', 'l': '𝗹', 'm': '𝗺', 'n': '𝗻', 'o': '𝗼', 'p': '𝗽', 'q': '𝗾', 'r': '𝗿', 's': '𝘀', 't': '𝘁', 'u': '𝘂', 'v': '𝘃', 'w': '𝘄', 'x': '𝘅', 'y': '𝘆', 'z': '𝘇',
+                    '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰', '5': '𝟱', '6': '𝟲', '7': '𝟳', '8': '𝟴', '9': '𝟵'
+                }[char] || char)).join('');
+            }
+            function toItalic(str) {
+                return str.split('').map(char => ({
+                    'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏', 'I': '𝘐', 'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '𝘕', 'O': '𝘖', 'P': '𝘗', 'Q': '𝘘', 'R': '𝘙', 'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟', 'Y': '𝘠', 'Z': '𝘡',
+                    'a': '𝘢', 'b': '𝘣', 'c': '𝘤', 'd': '𝘥', 'e': '𝘦', 'f': '𝘧', 'g': '𝘨', 'h': '𝘩', 'i': '𝘪', 'j': '𝘫', 'k': '𝘬', 'l': '𝘭', 'm': '𝘮', 'n': '𝘯', 'o': '𝘰', 'p': '𝘱', 'q': '𝘲', 'r': '𝘳', 's': '𝘴', 't': '𝘵', 'u': '𝘶', 'v': '𝘷', 'w': '𝘸', 'x': '𝘹', 'y': '𝘺', 'z': '𝘻'
+                }[char] || char)).join('');
+            }
+            function toStrikethrough(str) {
+                return str.split('').map(char => char + '\u0336').join('');
+            }
+            function calculateFleschReadingEase(text) {
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                const numSentences = sentences.length;
+                if (numSentences === 0) return 0;
+                const words = text.split(/\s+/).filter(w => w.trim().length > 0);
+                const numWords = words.length;
+                if (numWords === 0) return 0;
+                let numSyllables = 0;
+                const syllableRegex = /[aeiouyAEIOUY]{1,2}/g;
+                words.forEach(word => {
+                    const matches = word.match(syllableRegex);
+                    numSyllables += matches ? matches.length : 1;
                 });
-                return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
+                const ASL = numWords / numSentences;
+                const ASW = numSyllables / numWords;
+                const score = 206.835 - (1.015 * ASL) - (84.6 * ASW);
+                return Math.max(0, Math.min(100, score.toFixed(1)));
+            }
+            function getReadabilityDescription(score) {
+                if (score >= 90) return "Very Easy (5th grade)";
+                if (score >= 80) return "Easy (6th grade)";
+                if (score >= 70) return "Fairly Easy (7th grade)";
+                if (score >= 60) return "Standard (8th-9th grade)";
+                if (score >= 50) return "Fairly Difficult (10th-12th grade)";
+                if (score >= 30) return "Difficult (College)";
+                return "Very Difficult (Graduate)";
+            }
+            function formatText(text) {
+    const processParagraphInlineStyles = (line) => {
+        let processed = line;
+        processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
+        processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
+            if (!content.trim()) return '';
+            const converted = toBold(content);
+            return converted === content ? `◆ ${content} ◆` : converted;
+        });
+        processed = processed.replace(/_([^_]+)_|\*([^*]+)\*/g, (match, p1, p2) => {
+            const content = p1 || p2;
+            if (!content.trim()) return '';
+            const converted = toItalic(content);
+            return converted === content ? `✧ ${content} ✧` : converted;
+        });
+        return processed;
+    };
+    const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
+    const processedLines = lines.map(line => {
+        if (line.match(/^# (.*$)/)) {
+            let content = line.substring(2);
+            return `★ ${processParagraphInlineStyles(content)} ★`;
+        }
+        if (line.match(/^## (.*$)/)) {
+            let content = line.substring(3);
+            return `◆ ${processParagraphInlineStyles(content)} ◆`;
+        }
+        if (line.match(/^### (.*$)/)) {
+            let content = line.substring(4);
+            return `⟪ ${processParagraphInlineStyles(content)} ⟫`;
+        }
+        if (line.match(/^#### (.*$)/)) {
+            let content = line.substring(5);
+            return `⬅ ${processParagraphInlineStyles(content)} ➡`;
+        }
+        if (line.match(/^(#####|######) (.*$)/)) {
+            let content = line.replace(/^#+\s*/, '');
+            return `◀ ${processParagraphInlineStyles(content)} ▶`;
+        }
+        if (line.match(/^> (.*$)/)) {
+            const content = line.substring(2);
+            return `❝ ${processParagraphInlineStyles(content)} ❞`;
+        }
+        if (line.match(/^(---|\*\*\*|___)\s*$/)) {
+            return '▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬';
+        }
+        if (line.match(/^\s*[-*+]\s+(.*$)/)) {
+            const content = line.replace(/^\s*[-*+]\s+/, '');
+            return `• ${processParagraphInlineStyles(content)}`;
+        }
+        if (line.match(/^\s*(\d+)\.\s+(.*$)/)) {
+            const num = parseInt(line.match(/^\s*(\d+)\./)[1], 10);
+            const rest = line.replace(/^\s*(\d+)\.\s+/, '');
+            const circled = ['⓪', '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', '⑪', '⑫', '⑬', '⑭', '⑮', '⑯', '⑰', '⑱', '⑲', '⑳'];
+            const content = processParagraphInlineStyles(rest);
+            return (num >= 0 && num <= 20) ? `${circled[num]} ${content}` : `${num}. ${content}`;
+        }
+        return processParagraphInlineStyles(line);
+    });
+    return processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
+}
+            function getHashtagSuggestions(text) {
+                const doc = nlp(text);
+                const nouns = doc.nouns().out('array');
+                const verbs = doc.verbs().out('array');
+                const adjectives = doc.adjectives().out('array');
+                const keywords = [...new Set([...nouns, ...verbs, ...adjectives])];
+                const currentHashtags = new Set((text.match(/#[\p{L}\p{N}_]+/gu) || []).map(tag => tag.substring(1).toLowerCase()));
+                return keywords
+                    .filter(word => word.length > 2 && !currentHashtags.has(word.toLowerCase()))
+                    .map(word => `#${word.replace(/\s+/g, '')}`)
+                    .slice(0, 10);
             }
             function updateOutput() {
                 const text = inputText.value;
-                outputPreview.textContent = formatText(text);
+                const formattedText = formatText(text);
+                outputPreview.textContent = formattedText;
                 const charCount = text.length;
                 const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
-                const hashtagCount = text.match(/#[a-zA-Z0-9_]+/g)?.length || 0;
+                const hashtagCount = (text.match(/#[\p{L}\p{N}_]+/gu) || []).length;
                 charCountEl.textContent = `Chars: ${charCount}`;
                 wordCountEl.textContent = `Words: ${wordCount}`;
                 hashtagCountEl.textContent = `Hashtags: ${hashtagCount}`;
@@ -373,14 +495,56 @@
                 } else {
                     charCountEl.classList.remove('text-red-500', 'font-bold', 'text-yellow-500', 'font-semibold');
                 }
+                const readabilityScore = calculateFleschReadingEase(text);
+                readabilityScoreEl.textContent = `Readability: ${readabilityScore} (${getReadabilityDescription(readabilityScore)})`;
+                const linesInPreview = formattedText.split('\n');
+                const firstThreeLinesCharCount = linesInPreview.slice(0, 3).join('\n').length;
+                if (firstThreeLinesCharCount > userSettings.readMoreThreshold || linesInPreview.length > 3) {
+                    readMoreHint.classList.remove('hidden');
+                } else {
+                    readMoreHint.classList.add('hidden');
+                }
+                hashtagSuggestionsContainer.innerHTML = '';
+                const suggestions = getHashtagSuggestions(text);
+                if (suggestions.length > 0) {
+                    suggestions.forEach(tag => {
+                        const btn = document.createElement('button');
+                        btn.className = 'px-3 py-1 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 rounded-full text-xs hover:bg-blue-200 dark:hover:bg-blue-700 transition';
+                        btn.textContent = tag;
+                        btn.addEventListener('click', () => {
+                            insertTextAtCursor(tag + ' ');
+                            updateOutput();
+                            updateHistory(inputText.value);
+                        });
+                        hashtagSuggestionsContainer.appendChild(btn);
+                    });
+                } else {
+                    hashtagSuggestionsContainer.innerHTML = '<p class="text-xs italic">Start typing to get hashtag suggestions.</p>';
+                }
+            }
+            function insertTextAtCursor(textToInsert) {
+                const start = inputText.selectionStart;
+                const end = inputText.selectionEnd;
+                const value = inputText.value;
+                inputText.value = value.substring(0, start) + textToInsert + value.substring(end);
+                inputText.selectionStart = inputText.selectionEnd = start + textToInsert.length;
+                inputText.focus();
             }
             function triggerAutosave() {
                 clearTimeout(autosaveTimeout);
                 autosaveTimeout = setTimeout(() => {
                     localStorage.setItem('linkedinFormatter_wip', inputText.value);
                     autosaveStatus.textContent = `Saved. ${new Date().toLocaleTimeString()}`;
+                    if (loadedDraftId) {
+                        const index = drafts.findIndex(d => d.id === loadedDraftId);
+                        if (index !== -1) {
+                            drafts[index].content = inputText.value;
+                            saveDraftsToStorage();
+                            autosaveStatus.textContent = `Draft "${drafts[index].name}" auto-updated. ${new Date().toLocaleTimeString()}`;
+                        }
+                    }
                     setTimeout(() => autosaveStatus.textContent = '', 2000);
-                }, 1500);
+                }, userSettings.autosaveFrequency * 1000);
             }
             function updateHistory(text) {
                 if (text === history[historyIndex]) return;
@@ -414,29 +578,138 @@
             function saveDraftsToStorage() {
                 localStorage.setItem('linkedinFormatterDrafts', JSON.stringify(drafts));
             }
-            function renderDrafts() {
+            function saveCustomTemplatesToStorage() {
+                localStorage.setItem('linkedinFormatterCustomTemplates', JSON.stringify(customTemplates));
+            }
+            function renderDrafts(filterQuery = '', filterTag = '') {
                 draftsListContainer.innerHTML = '';
-                if (drafts.length === 0) {
-                    draftsListContainer.innerHTML = '<p class="text-gray-500 italic">No saved drafts yet. Save one to get started!</p>';
+                const filteredDrafts = drafts.filter(draft => {
+                    const matchesSearch = !filterQuery || draft.name.toLowerCase().includes(filterQuery.toLowerCase()) || draft.content.toLowerCase().includes(filterQuery.toLowerCase());
+                    const matchesTag = !filterTag || (draft.category && draft.category.toLowerCase() === filterTag.toLowerCase());
+                    return matchesSearch && matchesTag;
+                });
+                if (filteredDrafts.length === 0) {
+                    draftsListContainer.innerHTML = '<p class="text-gray-500 italic">No matching drafts found.</p>';
                     return;
                 }
-                drafts.forEach((draft, index) => {
+                const allCategories = [...new Set(drafts.map(d => d.category).filter(Boolean))];
+                draftFilterTag.innerHTML = '<option value="">All Categories</option>' +
+                    allCategories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+                if (filterTag) {
+                    draftFilterTag.value = filterTag;
+                }
+                filteredDrafts.forEach((draft, index) => {
                     const draftEl = document.createElement('div');
                     draftEl.className = 'flex items-center justify-between p-4 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md';
                     draftEl.innerHTML = `
-                    <div>
-                        <p class="font-semibold">${draft.name}</p>
-                        <p class="text-sm text-gray-500">${new Date(draft.id).toLocaleString()} - ${draft.content.substring(0, 40)}...</p>
+                    <div class="flex items-center gap-3 flex-grow">
+                        <input type="checkbox" class="draft-select-checkbox" data-id="${draft.id}">
+                        <div>
+                            <p class="font-semibold">${draft.name}</p>
+                            <p class="text-sm text-gray-500">${new Date(draft.id).toLocaleString()} ${draft.category ? `(<span class="italic">${draft.category}</span>)` : ''} - ${draft.content.substring(0, 40)}...</p>
+                        </div>
                     </div>
                     <div class="flex gap-2">
-                        <button class="btn-tool" data-action="load" data-index="${index}" title="Load"><i class="bi bi-box-arrow-in-down"></i></button>
-                        <button class="btn-tool" data-action="rename" data-index="${index}" title="Rename"><i class="bi bi-pencil-square"></i></button>
-                        <button class="btn-tool text-red-500" data-action="delete" data-index="${index}" title="Delete"><i class="bi bi-trash"></i></button>
+                        <button class="btn-tool" data-action="load" data-id="${draft.id}" title="Load"><i class="bi bi-box-arrow-in-down"></i></button>
+                        <button class="btn-tool" data-action="rename" data-id="${draft.id}" title="Rename/Categorize"><i class="bi bi-pencil-square"></i></button>
+                        <button class="btn-tool text-red-500" data-action="delete" data-id="${draft.id}" title="Delete"><i class="bi bi-trash"></i></button>
                     </div>
                 `;
                     draftsListContainer.appendChild(draftEl);
                 });
             }
+            function renderTemplates() {
+                defaultTemplatesContainer.innerHTML = '';
+                [...defaultTemplates, ...customTemplates].forEach((template, index) => {
+                    const templateEl = document.createElement('a');
+                    templateEl.className = 'export-option';
+                    templateEl.href = '#';
+                    templateEl.textContent = template.name;
+                    templateEl.dataset.templateId = template.id || `default-${index}`;
+                    templateEl.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        if (template.id) {
+                            editTemplate(template.id);
+                        } else {
+                            if (inputText.value && !confirm('This will replace current text. Continue?')) return;
+                            inputText.value = template.content;
+                            updateOutput();
+                            updateHistory(inputText.value);
+                            alert(`Loaded Template: "${template.name}"`);
+                            templateOptions.classList.add('hidden');
+                        }
+                    });
+                    defaultTemplatesContainer.appendChild(templateEl);
+                });
+            }
+            function editTemplate(templateId) {
+                const template = customTemplates.find(t => t.id === templateId);
+                if (template) {
+                    templateModalTitle.textContent = "Edit Template";
+                    templateNameInput.value = template.name;
+                    templateContentInput.value = template.content;
+                    saveTemplateBtn.textContent = "Update Template";
+                    saveTemplateBtn.dataset.editId = templateId;
+                    deleteTemplateBtn.style.display = 'inline-flex';
+                    deleteTemplateBtn.dataset.deleteId = templateId;
+                    createTemplateModal.classList.remove('hidden');
+                    createTemplateModal.classList.add('flex');
+                }
+            }
+            document.getElementById('backup-btn').addEventListener('click', () => {
+                const data = {
+                    drafts: drafts,
+                    customTemplates: customTemplates,
+                    wip: localStorage.getItem('linkedinFormatter_wip') || '',
+                    settings: userSettings
+                };
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `linkedin-formatter-backup-${new Date().toISOString().slice(0, 10)}.json`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+                alert("Backup created successfully!");
+            });
+            document.getElementById('restore-btn').addEventListener('click', () => {
+                document.getElementById('restore-file').click();
+            });
+            document.getElementById('restore-file').addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.drafts) {
+                            drafts = data.drafts;
+                            saveDraftsToStorage();
+                        }
+                        if (data.customTemplates) {
+                            customTemplates = data.customTemplates;
+                            saveCustomTemplatesToStorage();
+                            renderTemplates();
+                        }
+                        if (data.wip) {
+                            localStorage.setItem('linkedinFormatter_wip', data.wip);
+                            inputText.value = data.wip;
+                            updateOutput();
+                            updateHistory(inputText.value);
+                        }
+                        if (data.settings) {
+                            userSettings = data.settings;
+                            localStorage.setItem('linkedinFormatterSettings', JSON.stringify(userSettings));
+                            applySettings();
+                        }
+                        alert("Backup restored successfully!");
+                    } catch (err) {
+                        alert("Invalid backup file.");
+                        console.error("Restore error:", err);
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            });
             themeToggle.addEventListener('click', () => {
                 if (document.documentElement.classList.contains('dark')) {
                     document.documentElement.classList.remove('dark');
@@ -452,6 +725,13 @@
                 updateOutput();
                 triggerAutosave();
                 updateHistory(inputText.value);
+                if (loadedDraftId) {
+                    updateDraftBtn.classList.remove('hidden');
+                    saveDraftBtn.classList.add('hidden');
+                } else {
+                    updateDraftBtn.classList.add('hidden');
+                    saveDraftBtn.classList.remove('hidden');
+                }
             });
             document.querySelector('.toolbar').addEventListener('click', e => {
                 const button = e.target.closest('button[data-format]');
@@ -493,11 +773,14 @@
                 updateHistory(inputText.value);
             }
             clearBtn.addEventListener('click', () => {
-                if (confirm('Are you sure you want to clear the text?')) {
+                //if (confirm('Are you sure you want to clear the text?')) {
                     inputText.value = '';
                     updateOutput();
                     updateHistory('');
-                }
+                    loadedDraftId = null;
+                    updateDraftBtn.classList.add('hidden');
+                    saveDraftBtn.classList.remove('hidden');
+                //}
             });
             copyBtn.addEventListener('click', () => {
                 navigator.clipboard.writeText(outputPreview.textContent).then(() => {
@@ -516,16 +799,38 @@
             saveDraftBtn.addEventListener('click', () => {
                 const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
                 let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
-                if (!titleLine) titleLine = "Draft";
-                if (titleLine.length > 30) titleLine = titleLine.substring(0, 30) + "...";
+                if (!titleLine) titleLine = "Untitled Draft";
+                if (titleLine.length > 50) titleLine = titleLine.substring(0, 50) + "...";
                 const date = new Date().toLocaleDateString();
-                const name = `${titleLine} - ${date}`;
-                if (inputText.value.trim()) {
-                    drafts.unshift({ id: Date.now(), name: name, content: inputText.value });
+                const name = prompt("Enter draft name:", `${titleLine} - ${date}`);
+                if (name && inputText.value.trim()) {
+                    const category = prompt("Enter category for this draft (optional):");
+                    const newDraft = { id: Date.now(), name: name, content: inputText.value, category: category || '' };
+                    drafts.unshift(newDraft);
                     saveDraftsToStorage();
+                    loadedDraftId = newDraft.id;
+                    updateDraftBtn.classList.remove('hidden');
+                    saveDraftBtn.classList.add('hidden');
                     alert(`Draft saved: "${name}"`);
-                } else {
+                } else if (!inputText.value.trim()) {
                     alert("Nothing to save.");
+                }
+            });
+            updateDraftBtn.addEventListener('click', () => {
+                if (!loadedDraftId) {
+                    alert("No draft is currently loaded to update.");
+                    return;
+                }
+                const draftIndex = drafts.findIndex(d => d.id === loadedDraftId);
+                if (draftIndex !== -1) {
+                    const oldName = drafts[draftIndex].name;
+                    drafts[draftIndex].content = inputText.value;
+                    saveDraftsToStorage();
+                    alert(`Draft "${oldName}" updated successfully!`);
+                    updateDraftBtn.classList.add('hidden');
+                    saveDraftBtn.classList.remove('hidden');
+                } else {
+                    alert("Could not find the loaded draft to update.");
                 }
             });
             draftManagerBtn.addEventListener('click', () => {
@@ -536,44 +841,135 @@
             draftsListContainer.addEventListener('click', e => {
                 const button = e.target.closest('button[data-action]');
                 if (!button) return;
-                const index = parseInt(button.dataset.index, 10);
+                const id = parseInt(button.dataset.id, 10);
                 const action = button.dataset.action;
+                const draftIndex = drafts.findIndex(d => d.id === id);
+                if (draftIndex === -1) return;
                 if (action === 'load') {
-                    if (confirm('This will replace your current text. Continue?')) {
-                        inputText.value = drafts[index].content;
-                        updateOutput();
-                        updateHistory(inputText.value);
-                        draftManagerModal.classList.add('hidden');
+                    if (inputText.value.trim() && !confirm('This will replace your current text. Continue?')) {
+                        return;
                     }
+                    inputText.value = drafts[draftIndex].content;
+                    updateOutput();
+                    updateHistory(inputText.value);
+                    loadedDraftId = id;
+                    updateDraftBtn.classList.remove('hidden');
+                    saveDraftBtn.classList.add('hidden');
+                    draftManagerModal.classList.add('hidden');
                 } else if (action === 'delete') {
-                    if (confirm(`Are you sure you want to delete "${drafts[index].name}"?`)) {
-                        drafts.splice(index, 1);
+                    if (confirm(`Are you sure you want to delete "${drafts[draftIndex].name}"?`)) {
+                        if (loadedDraftId === id) {
+                            loadedDraftId = null;
+                            updateDraftBtn.classList.add('hidden');
+                            saveDraftBtn.classList.remove('hidden');
+                        }
+                        drafts.splice(draftIndex, 1);
                         saveDraftsToStorage();
-                        renderDrafts();
+                        renderDrafts(draftSearch.value, draftFilterTag.value);
                     }
                 } else if (action === 'rename') {
-                    const newName = prompt('Enter new name:', drafts[index].name);
+                    const oldName = drafts[draftIndex].name;
+                    const newName = prompt('Enter new name:', oldName);
                     if (newName) {
-                        drafts[index].name = newName;
+                        const newCategory = prompt('Enter new category (optional):', drafts[draftIndex].category || '');
+                        drafts[draftIndex].name = newName;
+                        drafts[draftIndex].category = newCategory || '';
                         saveDraftsToStorage();
-                        renderDrafts();
+                        renderDrafts(draftSearch.value, draftFilterTag.value);
                     }
                 }
             });
-            loadTemplateBtn.addEventListener('click', () => {
-                if (inputText.value && !confirm('This will replace current text. Continue?')) return;
-                const template = templates[currentTemplateIndex];
-                inputText.value = template.content;
-                updateOutput();
-                updateHistory(inputText.value);
-                alert(`Loaded Template: "${template.name}"`);
-                currentTemplateIndex = (currentTemplateIndex + 1) % templates.length;
+            draftSearch.addEventListener('input', () => renderDrafts(draftSearch.value, draftFilterTag.value));
+            draftFilterTag.addEventListener('change', () => renderDrafts(draftSearch.value, draftFilterTag.value));
+            selectAllDraftsCheckbox.addEventListener('change', (e) => {
+                document.querySelectorAll('.draft-select-checkbox').forEach(checkbox => {
+                    checkbox.checked = e.target.checked;
+                });
+            });
+            bulkDeleteDraftsBtn.addEventListener('click', () => {
+                const selectedDraftIds = Array.from(document.querySelectorAll('.draft-select-checkbox:checked'))
+                    .map(checkbox => parseInt(checkbox.dataset.id, 10));
+                if (selectedDraftIds.length === 0) {
+                    alert("No drafts selected for deletion.");
+                    return;
+                }
+                if (confirm(`Are you sure you want to delete ${selectedDraftIds.length} selected draft(s)?`)) {
+                    drafts = drafts.filter(draft => !selectedDraftIds.includes(draft.id));
+                    saveDraftsToStorage();
+                    if (selectedDraftIds.includes(loadedDraftId)) {
+                        loadedDraftId = null;
+                        updateDraftBtn.classList.add('hidden');
+                        saveDraftBtn.classList.remove('hidden');
+                    }
+                    renderDrafts(draftSearch.value, draftFilterTag.value);
+                    selectAllDraftsCheckbox.checked = false;
+                    alert(`${selectedDraftIds.length} draft(s) deleted.`);
+                }
+            });
+            templateDropdownBtn.addEventListener('click', () => templateOptions.classList.toggle('hidden'));
+            document.body.addEventListener('click', (e) => {
+                if (!templateDropdownBtn.contains(e.target) && !templateOptions.contains(e.target)) {
+                    templateOptions.classList.add('hidden');
+                }
+            });
+            createTemplateBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                templateModalTitle.textContent = "Create New Template";
+                templateNameInput.value = '';
+                templateContentInput.value = '';
+                saveTemplateBtn.textContent = "Save Template";
+                deleteTemplateBtn.style.display = 'none';
+                deleteTemplateBtn.removeAttribute('data-delete-id');
+                saveTemplateBtn.removeAttribute('data-edit-id');
+                createTemplateModal.classList.remove('hidden');
+                createTemplateModal.classList.add('flex');
+                templateOptions.classList.add('hidden');
+            });
+            saveTemplateBtn.addEventListener('click', () => {
+                const name = templateNameInput.value.trim();
+                const content = templateContentInput.value.trim();
+                if (!name || !content) {
+                    alert("Template name and content cannot be empty.");
+                    return;
+                }
+                const editId = saveTemplateBtn.dataset.editId;
+                if (editId) {
+                    const index = customTemplates.findIndex(t => t.id === editId);
+                    if (index !== -1) {
+                        customTemplates[index].name = name;
+                        customTemplates[index].content = content;
+                        alert(`Template "${name}" updated.`);
+                    }
+                } else {
+                    customTemplates.push({ id: Date.now().toString(), name, content });
+                    alert(`Template "${name}" created.`);
+                }
+                saveCustomTemplatesToStorage();
+                renderTemplates();
+                createTemplateModal.classList.add('hidden');
+            });
+            deleteTemplateBtn.addEventListener('click', () => {
+                const deleteId = deleteTemplateBtn.dataset.deleteId;
+                if (deleteId && confirm("Are you sure you want to delete this template?")) {
+                    customTemplates = customTemplates.filter(t => t.id !== deleteId);
+                    saveCustomTemplatesToStorage();
+                    renderTemplates();
+                    createTemplateModal.classList.add('hidden');
+                    alert("Template deleted.");
+                }
             });
             importFile.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
                 const reader = new FileReader();
-                reader.onload = (e) => { inputText.value = e.target.result; updateOutput(); updateHistory(inputText.value); };
+                reader.onload = (e) => {
+                    inputText.value = e.target.result;
+                    updateOutput();
+                    updateHistory(inputText.value);
+                    loadedDraftId = null;
+                    updateDraftBtn.classList.add('hidden');
+                    saveDraftBtn.classList.remove('hidden');
+                };
                 reader.readAsText(file);
             });
             exportDropdownBtn.addEventListener('click', () => exportOptions.classList.toggle('hidden'));
@@ -594,12 +990,55 @@
             document.getElementById('export-md-btn').addEventListener('click', (e) => { e.preventDefault(); exportFile(inputText.value, 'linkedin-post.md', 'text/markdown;charset=utf-8'); });
             document.getElementById('export-png-btn').addEventListener('click', (e) => {
                 e.preventDefault();
-                html2canvas(document.getElementById('output-preview')).then(canvas => {
+                html2canvas(document.getElementById('output-preview'), { useCORS: true }).then(canvas => {
                     const link = document.createElement('a');
                     link.download = 'linkedin-preview.png';
                     link.href = canvas.toDataURL('image/png');
                     link.click();
                 });
+            });
+            function generatePdfContent(draftsToExport) {
+                let content = [];
+                draftsToExport.forEach(draft => {
+                    content.push({ text: `Draft Name: ${draft.name}`, style: 'header' });
+                    content.push({ text: `Saved On: ${new Date(draft.id).toLocaleString()}`, style: 'subheader' });
+                    if (draft.category) {
+                        content.push({ text: `Category: ${draft.category}`, style: 'subheader' });
+                    }
+                    content.push({ text: 'Formatted Content:', style: 'subheader' });
+                    content.push({ text: formatText(draft.content), margin: [0, 0, 0, 20] });
+                    content.push({ text: '---', alignment: 'center', margin: [0, 0, 0, 20] });
+                });
+                return {
+                    content: content,
+                    styles: {
+                        header: { fontSize: 18, bold: true, margin: [0, 10, 0, 5] },
+                        subheader: { fontSize: 12, bold: true, margin: [0, 5, 0, 2] }
+                    }
+                };
+            }
+            exportPdfAllBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (drafts.length === 0) {
+                    alert("No drafts to export.");
+                    return;
+                }
+                const docDefinition = generatePdfContent(drafts);
+                alert("PDF export functionality would typically use a library like pdfMake. This is a placeholder for the PDF generation logic. Exporting all drafts as a PDF is not directly possible without a full pdfMake library integration. Content prepared for PDF.");
+                console.log("PDF Content (all drafts):", docDefinition);
+            });
+            exportSelectedDraftsBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selectedDraftIds = Array.from(document.querySelectorAll('.draft-select-checkbox:checked'))
+                    .map(checkbox => parseInt(checkbox.dataset.id, 10));
+                if (selectedDraftIds.length === 0) {
+                    alert("No drafts selected for PDF export.");
+                    return;
+                }
+                const selectedDrafts = drafts.filter(draft => selectedDraftIds.includes(draft.id));
+                const docDefinition = generatePdfContent(selectedDrafts);
+                alert("PDF export functionality would typically use a library like pdfMake. This is a placeholder for the PDF generation logic. Exporting selected drafts as a PDF is not directly possible without a full pdfMake library integration. Content prepared for PDF.");
+                console.log("PDF Content (selected drafts):", docDefinition);
             });
             document.querySelectorAll('.modal-close-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -613,15 +1052,41 @@
             emojiGrid.addEventListener('click', e => {
                 if (e.target.tagName === 'BUTTON') {
                     const emoji = e.target.textContent;
-                    const start = inputText.selectionStart;
-                    const end = inputText.selectionEnd;
-                    inputText.setRangeText(emoji, start, end, 'end');
-                    inputText.focus();
+                    insertTextAtCursor(emoji);
                     updateOutput();
                     updateHistory(inputText.value);
                     emojiPickerModal.classList.add('hidden');
                 }
             });
+            settingsBtn.addEventListener('click', () => {
+                autosaveFrequencyInput.value = userSettings.autosaveFrequency;
+                readMoreThresholdInput.value = userSettings.readMoreThreshold;
+                settingsModal.classList.remove('hidden');
+                settingsModal.classList.add('flex');
+            });
+            saveSettingsBtn.addEventListener('click', () => {
+                const newAutosaveFrequency = parseInt(autosaveFrequencyInput.value, 10);
+                const newReadMoreThreshold = parseInt(readMoreThresholdInput.value, 10);
+                if (isNaN(newAutosaveFrequency) || newAutosaveFrequency < 5) {
+                    alert("Autosave frequency must be a number greater than or equal to 5 seconds.");
+                    return;
+                }
+                if (isNaN(newReadMoreThreshold) || newReadMoreThreshold < 50) {
+                    alert("'Read More' threshold must be a number greater than or equal to 50 characters.");
+                    return;
+                }
+                userSettings.autosaveFrequency = newAutosaveFrequency;
+                userSettings.readMoreThreshold = newReadMoreThreshold;
+                localStorage.setItem('linkedinFormatterSettings', JSON.stringify(userSettings));
+                applySettings();
+                settingsModal.classList.add('hidden');
+                alert("Settings saved!");
+            });
+            function applySettings() {
+                clearTimeout(autosaveTimeout);
+                triggerAutosave();
+                updateOutput();
+            }
             function initialize() {
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
@@ -639,14 +1104,42 @@
                     btn.textContent = emoji;
                     emojiGrid.appendChild(btn);
                 });
+                if (drafts.length === 0) {
+                    drafts.push({
+                        id: 1678886400000,
+                        name: "Sample Project Update",
+                        content: "🚀 Thrilled to announce the successful completion of Phase 1 of our new AI project! Huge thanks to the incredible team for their dedication and hard work. More exciting updates to follow soon!\n\n#AI #ProjectManagement #Innovation #Teamwork",
+                        category: "Project"
+                    });
+                    drafts.push({
+                        id: 1684262400000,
+                        name: "Hiring: Senior Software Engineer",
+                        content: "🌟 We're expanding our team! We're looking for a passionate Senior Software Engineer to join our dynamic product development team. If you have a strong background in **React** and *Node.js*, apply now!\n\nCheck out the full job description here: [Link to Careers Page]\n\n#Hiring #SoftwareEngineer #TechJobs #PakistanTech",
+                        category: "Hiring"
+                    });
+                    drafts.push({
+                        id: 1691020800000,
+                        name: "Thought Leadership: Future of Work",
+                        content: "The future of work is here, and it's more dynamic than ever. Exploring the impact of hybrid models and flexible schedules on productivity and employee well-being. What are your thoughts?\n\n#FutureOfWork #HybridWork #Leadership #EmployeeEngagement",
+                        category: "Thought Leadership"
+                    });
+                    drafts.push({
+                        id: 1699968000000,
+                        name: "Urdu Content Test",
+                        content: "السلام علیکم! آج کا دن بہت شاندار ہے۔\nنئی اپڈیٹس کے ساتھ ایک دلچسپ تجربہ۔\n\n#اردو #پاکستان #ٹیکنالوجی",
+                        category: "Urdu"
+                    });
+                    saveDraftsToStorage();
+                }
                 updateOutput();
                 updateHistory(inputText.value);
                 updateUndoRedoButtons();
+                renderTemplates();
+                applySettings();
             }
             initialize();
         });
     </script>
-
 <script type="module">
   import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
