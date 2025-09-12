@@ -1092,7 +1092,7 @@
                         content.push({ text: `Category: ${draft.category}`, style: 'subheader' });
                     }
                     content.push({ text: 'Formatted Content:', style: 'subheader' });
-                    content.push({ text: formatText(draft.content), margin: [0, 0, 0, 20] });
+                    content.push({ text: formatText(draft.content) || ' ', margin: [0, 0, 0, 20] });
                     content.push({ text: '---', alignment: 'center', margin: [0, 0, 0, 20] });
                 });
                 return {
