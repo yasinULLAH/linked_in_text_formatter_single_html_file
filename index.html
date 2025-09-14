@@ -855,16 +855,16 @@
                 if (!titleLine) titleLine = "Untitled Draft";
                 //if (titleLine.length > 50) titleLine = titleLine.substring(0, 50) + "...";
                 const date = new Date().toLocaleDateString();
-                const name = prompt("Enter draft name:", `${titleLine} - ${date}`);
+                const name = `${titleLine} - ${date}`;
                 if (name && inputText.value.trim()) {
-                    const category = prompt("Enter category for this draft (optional):");
+                    const category = ""; //prompt("Enter category for this draft (optional):");
                     const newDraft = { id: Date.now(), name: name, content: inputText.value, category: category || '' };
                     drafts.unshift(newDraft);
                     saveDraftsToStorage();
                     loadedDraftId = newDraft.id;
                     updateDraftBtn.classList.remove('hidden');
                     saveDraftBtn.classList.add('hidden');
-                    alert(`Draft saved: "${name}"`);
+                    //alert(`Draft saved: "${name}"`);
                 } else if (!inputText.value.trim()) {
                     alert("Nothing to save.");
                 }
@@ -995,7 +995,7 @@
                     }
                 } else {
                     customTemplates.push({ id: Date.now().toString(), name, content });
-                    alert(`Template "${name}" created.`);
+                    //alert(`Template "${name}" created.`);
                 }
                 saveCustomTemplatesToStorage();
                 renderTemplates();
