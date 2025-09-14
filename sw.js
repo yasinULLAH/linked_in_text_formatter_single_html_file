@@ -66,7 +66,7 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "d1341ba3fb7a6933430653fcf19efb65"
+        "revision": "496763f889a7e5edea98fbdf0d58579e"
     },
     {
         "url": "manifest.json",
@@ -98,7 +98,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "3768b3c55eccb479c263d00108295ed6"
+        "revision": "4406cd694f99cc082119ec2eb08ce52f"
     },
     {
         "url": "fonts/NotoNastaliqUrdu-Bold.ttf",

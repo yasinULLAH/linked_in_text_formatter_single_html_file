@@ -1,30 +1,23 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Advanced LinkedIn Text Formatter</title>
-    <meta
-        content="A powerful tool to format LinkedIn posts with a full draft management system, auto-saving, undo/redo, emoji picker, and advanced analytics."
-        name="description" />
-    <meta
-        content="linkedin formatter, text formatter, draft management, auto-save, linkedin post editor, Yasin Ullah, Pakistan"
-        name="keywords" />
-    <meta content="Yasin Ullah, Pakistan" name="author" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap"
-        rel="stylesheet" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/compromise@14.13.0/builds/compromise.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js"></script>
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Advanced LinkedIn Text Formatter</title>
+<meta content="A powerful tool to format LinkedIn posts with a full draft management system, auto-saving, undo/redo, emoji picker, and advanced analytics." name="description"/>
+<meta content="linkedin formatter, text formatter, draft management, auto-save, linkedin post editor, Yasin Ullah, Pakistan" name="keywords"/>
+<meta content="Yasin Ullah, Pakistan" name="author"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Nastaliq+Urdu:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/compromise@14.13.0/builds/compromise.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.10/vfs_fonts.js"></script>
+<style>
         :root {
             --font-primary: Calibri, 'Inter', sans-serif;
             --font-urdu: Calibri, 'Noto Nastaliq Urdu', serif;
@@ -73,231 +66,196 @@
             font-family: var(--font-primary), var(--font-urdu);
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="manifest.json" rel="manifest" />
-    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link href="manifest.json" rel="manifest"/>
+<link href="favicon.ico" rel="icon" type="image/x-icon"/>
 </head>
-
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300">
-    <div class="container mx-auto p-4 lg:p-6">
-        <header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-            <h1 class="text-3xl font-bold text-blue-600 dark:text-blue-500">Advanced LinkedIn Formatter</h1>
-            <div class="flex items-center gap-4">
-                <button
-                    class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    id="settings-btn" title="Settings">
-                    <i class="bi bi-gear-fill"></i>
-                </button>
-                <button
-                    class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    id="theme-toggle">
-                    <i class="bi bi-moon-stars-fill"></i>
-                </button>
-            </div>
-        </header>
-        <main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
-                <h2 class="text-xl font-semibold mb-4">Input</h2>
-                <div class="toolbar flex flex-wrap items-center gap-2 mb-4 border-b dark:border-gray-700 pb-4">
-                    <button class="btn-tool" data-format="bold" title="Bold (Ctrl+B)"><i
-                            class="bi bi-type-bold"></i></button>
-                    <button class="btn-tool" data-format="italic" title="Italic (Ctrl+I)"><i
-                            class="bi bi-type-italic"></i></button>
-                    <button class="btn-tool" data-format="strikethrough" title="Strikethrough"><i
-                            class="bi bi-type-strikethrough"></i></button>
-                    <button class="btn-tool" data-format="bullet" title="Bullet List"><i
-                            class="bi bi-list-ul"></i></button>
-                    <button class="btn-tool" data-format="number" title="Numbered List"><i
-                            class="bi bi-list-ol"></i></button>
-                    <button class="btn-tool" id="emoji-picker-btn" title="Insert Emoji"><i
-                            class="bi bi-emoji-smile"></i></button>
-                    <div class="border-l dark:border-gray-600 pl-2 ml-2">
-                        <button class="btn-tool" id="undo-btn" title="Undo (Ctrl+Z)"><i
-                                class="bi bi-arrow-counterclockwise"></i></button>
-                        <button class="btn-tool" id="redo-btn" title="Redo (Ctrl+Y)"><i
-                                class="bi bi-arrow-clockwise"></i></button>
-                    </div>
-                </div>
-                <textarea
-                    class="w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none"
-                    dir="auto" id="input-text" placeholder="Start writing your powerful LinkedIn post..."></textarea>
-                <div
-                    class="flex flex-wrap justify-between items-center text-sm mt-3 text-gray-500 dark:text-gray-400 gap-2">
-                    <div>
-                        <span id="char-count">Chars: 0</span> |
+<div class="container mx-auto p-4 lg:p-6">
+<header class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
+<h1 class="text-3xl font-bold text-blue-600 dark:text-blue-500">Advanced LinkedIn Formatter</h1>
+<div class="flex items-center gap-4">
+<button class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="settings-btn" title="Settings">
+<i class="bi bi-gear-fill"></i>
+</button>
+<button class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" id="theme-toggle">
+<i class="bi bi-moon-stars-fill"></i>
+</button>
+</div>
+</header>
+<main class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
+<h2 class="text-xl font-semibold mb-4">Input</h2>
+<div class="toolbar flex flex-wrap items-center gap-2 mb-4 border-b dark:border-gray-700 pb-4">
+<button class="btn-tool" data-format="bold" title="Bold (Ctrl+B)"><i class="bi bi-type-bold"></i></button>
+<button class="btn-tool" data-format="italic" title="Italic (Ctrl+I)"><i class="bi bi-type-italic"></i></button>
+<button class="btn-tool" data-format="strikethrough" title="Strikethrough"><i class="bi bi-type-strikethrough"></i></button>
+<button class="btn-tool" data-format="bullet" title="Bullet List"><i class="bi bi-list-ul"></i></button>
+<button class="btn-tool" data-format="number" title="Numbered List"><i class="bi bi-list-ol"></i></button>
+<button class="btn-tool" id="emoji-picker-btn" title="Insert Emoji"><i class="bi bi-emoji-smile"></i></button>
+<div class="border-l dark:border-gray-600 pl-2 ml-2">
+<button class="btn-tool" id="undo-btn" title="Undo (Ctrl+Z)"><i class="bi bi-arrow-counterclockwise"></i></button>
+<button class="btn-tool" id="redo-btn" title="Redo (Ctrl+Y)"><i class="bi bi-arrow-clockwise"></i></button>
+</div>
+</div>
+<textarea class="w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none" dir="auto" id="input-text" placeholder="Start writing your powerful LinkedIn post..."></textarea>
+<div class="flex flex-wrap justify-between items-center text-sm mt-3 text-gray-500 dark:text-gray-400 gap-2">
+<div>
+<span id="char-count">Chars: 0</span> |
                         <span id="word-count">Words: 0</span> |
                         <span id="hashtag-count">Hashtags: 0</span> |
                         <span id="readability-score">Readability: N/A</span>
-                    </div>
-                    <span class="text-xs italic" id="autosave-status"></span>
-                </div>
-                <div class="mt-4">
-                    <h4 class="font-semibold mb-2">Hashtag Suggestions:</h4>
-                    <div class="flex flex-wrap gap-2" id="hashtag-suggestions">
-                    </div>
-                </div>
-            </div>
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
-                <h2 class="text-xl font-semibold mb-4">Preview &amp; Actions</h2>
-                <div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto relative"
-                    dir="auto" id="output-preview">
-                </div>
-                <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
-                    <span class="hidden" id="read-more-hint">LinkedIn typically truncates posts after ~3 lines or
+</div>
+<span class="text-xs italic" id="autosave-status"></span>
+</div>
+<div class="mt-4">
+<h4 class="font-semibold mb-2">Hashtag Suggestions:</h4>
+<div class="flex flex-wrap gap-2" id="hashtag-suggestions">
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
+<h2 class="text-xl font-semibold mb-4">Preview &amp; Actions</h2>
+<div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto relative" dir="auto" id="output-preview">
+</div>
+<div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
+<span class="hidden" id="read-more-hint">LinkedIn typically truncates posts after ~3 lines or
                         200-250 characters. Consider adding a "Read More" or "..." here.</span>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-                    <button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+<button class="btn btn-primary" id="copy-btn"><i class="bi bi-clipboard-check"></i> Copy
                         Result
                     </button>
-                    <button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear Text</button>
-                    <button class="btn btn-secondary col-span-2 sm:col-span-1" id="share-linkedin-btn"><i
-                            class="bi bi-linkedin"></i> Share on LinkedIn</button>
-                </div>
-            </div>
-        </main>
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mt-6">
-            <h3 class="text-xl font-semibold mb-4">Content Management</h3>
-            <div class="flex flex-wrap gap-3">
-                <button class="btn btn-primary" id="save-draft-btn"><i class="bi bi-save"></i> Save New Draft</button>
-                <button class="btn btn-primary hidden" id="update-draft-btn"><i class="bi bi-arrow-repeat"></i> Update
+<button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear Text</button>
+<button class="btn btn-secondary col-span-2 sm:col-span-1" id="share-linkedin-btn"><i class="bi bi-linkedin"></i> Share on LinkedIn</button>
+</div>
+</div>
+</main>
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mt-6">
+<h3 class="text-xl font-semibold mb-4">Content Management</h3>
+<div class="flex flex-wrap gap-3">
+<button class="btn btn-primary" id="save-draft-btn"><i class="bi bi-save"></i> Save New Draft</button>
+<button class="btn btn-primary hidden" id="update-draft-btn"><i class="bi bi-arrow-repeat"></i> Update
                     Draft</button>
-                <button class="btn btn-secondary" id="draft-manager-btn"><i class="bi bi-collection"></i> Manage
+<button class="btn btn-secondary" id="draft-manager-btn"><i class="bi bi-collection"></i> Manage
                     Drafts
                 </button>
-                <button class="btn btn-secondary" id="backup-btn"><i class="bi bi-cloud-download"></i> Backup
+<button class="btn btn-secondary" id="backup-btn"><i class="bi bi-cloud-download"></i> Backup
                     All
                 </button>
-                <button class="btn btn-secondary" id="restore-btn"><i class="bi bi-cloud-upload"></i> Restore</button>
-                <input accept=".json" class="hidden" id="restore-file" type="file" />
-                <div class="relative">
-                    <button class="btn btn-secondary" id="template-dropdown-btn"><i class="bi bi-lightbulb"></i>
+<button class="btn btn-secondary" id="restore-btn"><i class="bi bi-cloud-upload"></i> Restore</button>
+<input accept=".json" class="hidden" id="restore-file" type="file"/>
+<div class="relative">
+<button class="btn btn-secondary" id="template-dropdown-btn"><i class="bi bi-lightbulb"></i>
                         Templates
                         <i class="bi bi-chevron-down ml-2"></i></button>
-                    <div class="hidden absolute bottom-full mb-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-10"
-                        id="template-options">
-                        <div id="default-templates"></div>
-                        <a class="export-option border-t dark:border-gray-600 mt-1 pt-1" href="#"
-                            id="create-template-btn"><i class="bi bi-plus-circle"></i> Create New Template</a>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" onclick="document.getElementById('import-file').click()"><i
-                        class="bi bi-upload"></i> Import .txt</button>
-                <input accept=".txt" class="hidden" id="import-file" type="file" />
-                <div class="relative">
-                    <button class="btn btn-secondary" id="export-dropdown-btn"><i class="bi bi-download"></i> Export As
+<div class="hidden absolute bottom-full mb-2 w-48 bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-10" id="template-options">
+<div id="default-templates"></div>
+<a class="export-option border-t dark:border-gray-600 mt-1 pt-1" href="#" id="create-template-btn"><i class="bi bi-plus-circle"></i> Create New Template</a>
+</div>
+</div>
+<button class="btn btn-secondary" onclick="document.getElementById('import-file').click()"><i class="bi bi-upload"></i> Import .txt</button>
+<input accept=".txt" class="hidden" id="import-file" type="file"/>
+<div class="relative">
+<button class="btn btn-secondary" id="export-dropdown-btn"><i class="bi bi-download"></i> Export As
                         <i class="bi bi-chevron-down ml-2"></i></button>
-                    <div class="hidden absolute bottom-full mb-2 w-full bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-10"
-                        id="export-options">
-                        <a class="export-option" href="#" id="export-txt-btn">Text (.txt)</a>
-                        <a class="export-option" href="#" id="export-md-btn">Markdown (.md)</a>
-                        <a class="export-option" href="#" id="export-png-btn">Image (.png)</a>
-                        <a class="export-option" href="#" id="export-pdf-all-btn">All Drafts (.pdf)</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4"
-        id="draft-manager-modal">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
-                <h3 class="text-2xl font-semibold">Draft Manager</h3>
-                <button class="modal-close-btn">×</button>
-            </div>
-            <div class="p-4 border-b dark:border-gray-700 flex flex-wrap gap-2">
-                <input class="flex-grow p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600"
-                    id="draft-search" placeholder="Search drafts..." type="text" />
-                <select class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600"
-                    id="draft-filter-tag">
-                    <option value="">All Categories</option>
-                </select>
-                <button class="btn btn-secondary" id="export-selected-drafts-btn"><i class="bi bi-box-arrow-up"></i>
-                </button>
-                <button class="block px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                    id="export-selected-txt">
-                    <i class="bi bi-file-earmark-text"></i>
-                </button>
-                <button class="block px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100"
-                    id="export-selected-jpg">
-                    <i class="bi bi-file-earmark-image"></i>
-                </button>
-            </div>
-            <div class="p-6 overflow-y-auto flex-grow" id="drafts-list">
-            </div>
-            <div class="p-4 border-t dark:border-gray-700 flex justify-between items-center">
-                <label class="flex items-center gap-2 text-sm">
-                    <input id="select-all-drafts" type="checkbox" /> Select All
+<div class="hidden absolute bottom-full mb-2 w-full bg-white dark:bg-gray-700 border dark:border-gray-600 rounded-md shadow-lg z-10" id="export-options">
+<a class="export-option" href="#" id="export-txt-btn">Text (.txt)</a>
+<a class="export-option" href="#" id="export-md-btn">Markdown (.md)</a>
+<a class="export-option" href="#" id="export-png-btn">Image (.png)</a>
+<a class="export-option" href="#" id="export-pdf-all-btn">All Drafts (.pdf)</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="draft-manager-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold">Draft Manager</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-4 border-b dark:border-gray-700 flex flex-wrap gap-2">
+<input class="flex-grow p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="draft-search" placeholder="Search drafts..." type="text"/>
+<select class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="draft-filter-tag">
+<option value="">All Categories</option>
+</select>
+<button class="btn btn-secondary" id="export-selected-drafts-btn"><i class="bi bi-box-arrow-up"></i>
+</button>
+<button class="block px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100" id="export-selected-txt">
+<i class="bi bi-file-earmark-text"></i>
+</button>
+<button class="block px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100" id="export-selected-jpg">
+<i class="bi bi-file-earmark-image"></i>
+</button>
+</div>
+<div class="p-6 overflow-y-auto flex-grow" id="drafts-list">
+</div>
+<div class="p-4 border-t dark:border-gray-700 flex justify-between items-center">
+<label class="flex items-center gap-2 text-sm">
+<input id="select-all-drafts" type="checkbox"/> Select All
                 </label>
-                <button class="btn btn-danger" id="bulk-delete-drafts-btn"><i class="bi bi-trash"></i> Delete
+<button class="btn btn-danger" id="bulk-delete-drafts-btn"><i class="bi bi-trash"></i> Delete
                     Selected</button>
-            </div>
-        </div>
-    </div>
-    <div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4"
-        id="emoji-picker-modal">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[70vh] flex flex-col">
-            <div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
-                <h3 class="text-2xl font-semibold">Select Emoji</h3>
-                <button class="modal-close-btn">×</button>
-            </div>
-            <div class="p-5 grid grid-cols-8 gap-2 overflow-y-auto" id="emoji-grid">
-            </div>
-        </div>
-    </div>
-    <div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="settings-modal">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[70vh] flex flex-col">
-            <div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
-                <h3 class="text-2xl font-semibold">Settings</h3>
-                <button class="modal-close-btn">×</button>
-            </div>
-            <div class="p-6 overflow-y-auto">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" for="autosave-frequency">Autosave Frequency
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="emoji-picker-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[70vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold">Select Emoji</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-5 grid grid-cols-8 gap-2 overflow-y-auto" id="emoji-grid">
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="settings-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[70vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold">Settings</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-6 overflow-y-auto">
+<div class="mb-4">
+<label class="block text-sm font-medium mb-2" for="autosave-frequency">Autosave Frequency
                         (seconds):</label>
-                    <input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600"
-                        id="autosave-frequency" min="5" type="number" value="10" />
-                </div>
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" for="read-more-threshold">"Read More" Character
+<input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="autosave-frequency" min="5" type="number" value="10"/>
+</div>
+<div class="mb-4">
+<label class="block text-sm font-medium mb-2" for="read-more-threshold">"Read More" Character
                         Threshold:</label>
-                    <input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600"
-                        id="read-more-threshold" min="50" type="number" value="250" />
-                </div>
-                <div class="flex justify-end">
-                    <button class="btn btn-primary" id="save-settings-btn">Save Settings</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4"
-        id="create-template-modal">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
-                <h3 class="text-2xl font-semibold" id="template-modal-title">Create New Template</h3>
-                <button class="modal-close-btn">×</button>
-            </div>
-            <div class="p-6 flex-grow flex flex-col">
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-2" for="template-name">Template Name:</label>
-                    <input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600"
-                        id="template-name" placeholder="e.g., Project Update, Hiring Post" type="text" />
-                </div>
-                <div class="mb-4 flex-grow">
-                    <label class="block text-sm font-medium mb-2" for="template-content">Template Content:</label>
-                    <textarea
-                        class="w-full h-48 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 resize-none"
-                        id="template-content" placeholder="Enter your template content here..."></textarea>
-                </div>
-                <div class="flex justify-end gap-3">
-                    <button class="btn btn-secondary" id="delete-template-btn" style="display:none;"><i
-                            class="bi bi-trash"></i> Delete</button>
-                    <button class="btn btn-primary" id="save-template-btn">Save Template</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
+<input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="read-more-threshold" min="50" type="number" value="250"/>
+</div>
+<div class="flex justify-end">
+<button class="btn btn-primary" id="save-settings-btn">Save Settings</button>
+</div>
+</div>
+</div>
+</div>
+<div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="create-template-modal">
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
+<div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
+<h3 class="text-2xl font-semibold" id="template-modal-title">Create New Template</h3>
+<button class="modal-close-btn">×</button>
+</div>
+<div class="p-6 flex-grow flex flex-col">
+<div class="mb-4">
+<label class="block text-sm font-medium mb-2" for="template-name">Template Name:</label>
+<input class="w-full p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600" id="template-name" placeholder="e.g., Project Update, Hiring Post" type="text"/>
+</div>
+<div class="mb-4 flex-grow">
+<label class="block text-sm font-medium mb-2" for="template-content">Template Content:</label>
+<textarea class="w-full h-48 p-2 rounded-lg bg-gray-100 dark:bg-gray-700 border dark:border-gray-600 resize-none" id="template-content" placeholder="Enter your template content here..."></textarea>
+</div>
+<div class="flex justify-end gap-3">
+<button class="btn btn-secondary" id="delete-template-btn" style="display:none;"><i class="bi bi-trash"></i> Delete</button>
+<button class="btn btn-primary" id="save-template-btn">Save Template</button>
+</div>
+</div>
+</div>
+</div>
+<script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -311,7 +269,7 @@
             }
         }
     </script>
-    <style>
+<style>
         .btn {
             @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-semibold transition-transform duration-200 hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800;
         }
@@ -345,7 +303,7 @@
             font-family: var(--font-primary), var(--font-urdu);
         }
     </style>
-    <script>
+<script>
         document.addEventListener('DOMContentLoaded', () => {
             const inputText = document.getElementById('input-text');
             const outputPreview = document.getElementById('output-preview');
@@ -895,7 +853,7 @@
                 const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
                 let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
                 if (!titleLine) titleLine = "Untitled Draft";
-                if (titleLine.length > 50) titleLine = titleLine.substring(0, 50) + "...";
+                //if (titleLine.length > 50) titleLine = titleLine.substring(0, 50) + "...";
                 const date = new Date().toLocaleDateString();
                 const name = prompt("Enter draft name:", `${titleLine} - ${date}`);
                 if (name && inputText.value.trim()) {
@@ -1086,7 +1044,7 @@
                 const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
                 let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
                 if (!titleLine) titleLine = "Untitled";
-                if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
+                //if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
                 const date = new Date().toISOString().slice(0, 10);
                 exportFile(outputPreview.textContent, `${titleLine} - ${date}.txt`, 'text/plain;charset=utf-8');
             });
@@ -1100,6 +1058,7 @@
                         const draft = drafts.find(d => d.id === draftId);
                         if (draft) {
                             exportFile(formatText(draft.content), `${draft.name}.txt`, 'text/plain;charset=utf-8');
+                            exportFile(draft.content, `${draft.name}.md`, 'text/markdown;charset=utf-8');
                         }
                     });
                 } else {
@@ -1144,7 +1103,7 @@
                     const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
                     let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
                     if (!titleLine) titleLine = "Untitled";
-                    if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
+                    //if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
                     const date = new Date().toISOString().slice(0, 10);
                     const link = document.createElement('a');
                     link.download = `${titleLine} - ${date}.png`;
@@ -1313,24 +1272,22 @@
         });
     </script>
 
-    <script type="module">
-        import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
-        const swUrl = './sw.js';
-        const wb = new Workbox(swUrl);
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
 
-        wb.addEventListener('waiting', () => {
-            console.log('A new service worker is waiting to activate.');
-            wb.messageSW({ type: 'SKIP_WAITING' });
-        });
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
 
-        wb.addEventListener('controlling', () => {
-            console.log('The new service worker is now in control. Reloading page for updates...');
-            window.location.reload();
-        });
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
 
-        wb.register();
-    </script>
-</body>
-
+  wb.register();
+</script></body>
 </html>
