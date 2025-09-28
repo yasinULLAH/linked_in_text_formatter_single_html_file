@@ -207,7 +207,14 @@
         id="replacements-modal">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col">
             <div class="flex justify-between items-center p-5 border-b dark:border-gray-700">
-                <h3 class="text-2xl font-semibold">Custom Replacements</h3>
+                <div class="flex items-center gap-4">
+                    <h3 class="text-2xl font-semibold">Custom Replacements</h3>
+                    <button class="btn-tool" id="backup-replacements-btn" title="Backup Rules"><i
+                            class="bi bi-cloud-download"></i></button>
+                    <button class="btn-tool" id="restore-replacements-btn" title="Restore Rules"><i
+                            class="bi bi-cloud-upload"></i></button>
+                    <input accept=".json" class="hidden" id="restore-replacements-file" type="file" />
+                </div>
                 <button class="modal-close-btn">×</button>
             </div>
             <div class="p-6 overflow-y-auto flex-grow" id="replacements-list">
@@ -1519,6 +1526,59 @@
                 }
             });
             cancelEditBtn.addEventListener('click', resetReplacementForm);
+            // Add backup/restore functionality for replacement rules
+            const backupReplacementsBtn = document.getElementById('backup-replacements-btn');
+            const restoreReplacementsBtn = document.getElementById('restore-replacements-btn');
+            const restoreReplacementsFile = document.getElementById('restore-replacements-file');
+
+            backupReplacementsBtn.addEventListener('click', () => {
+                if (replacements.length === 0) {
+                    alert("There are no replacement rules to back up.");
+                    return;
+                }
+                const dataStr = JSON.stringify(replacements, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.download = `linkedin-formatter-replacements-${new Date().toISOString().slice(0, 10)}.json`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            });
+
+            restoreReplacementsBtn.addEventListener('click', () => {
+                restoreReplacementsFile.click();
+            });
+
+            restoreReplacementsFile.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const importedRules = JSON.parse(e.target.result);
+                        if (!Array.isArray(importedRules)) {
+                            throw new Error("Invalid format: Backup must be a JSON array.");
+                        }
+
+                        if (confirm("This will overwrite all current replacement rules. Continue?")) {
+                            replacements = importedRules;
+                            saveReplacementsToStorage();
+                            renderReplacements();
+                            updateOutput();
+                            alert("Rules restored successfully!");
+                        }
+                    } catch (err) {
+                        alert(`Error restoring rules: ${err.message}`);
+                    } finally {
+                        event.target.value = '';
+                    }
+                };
+                reader.readAsText(file);
+            });
             initialize();
         });
 
