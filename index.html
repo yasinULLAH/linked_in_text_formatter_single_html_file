@@ -821,7 +821,9 @@
                     drafts: drafts,
                     customTemplates: customTemplates,
                     wip: localStorage.getItem('linkedinFormatter_wip') || '',
-                    settings: userSettings
+                    settings: userSettings,
+                    replacements: replacements,
+                    theme: localStorage.getItem('theme') || 'light'
                 };
                 const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
                 const link = document.createElement('a');
@@ -860,6 +862,21 @@
                             userSettings = data.settings;
                             localStorage.setItem('linkedinFormatterSettings', JSON.stringify(userSettings));
                             applySettings();
+                            if (data.replacements) {
+                                replacements = data.replacements;
+                                saveReplacementsToStorage();
+                                updateOutput(); // Apply new replacements immediately
+                            }
+                            if (data.theme) {
+                                localStorage.setItem('theme', data.theme);
+                                if (data.theme === 'dark') {
+                                    document.documentElement.classList.add('dark');
+                                    themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
+                                } else {
+                                    document.documentElement.classList.remove('dark');
+                                    themeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
+                                }
+                            }
                         }
                         alert("Backup restored successfully!");
                     } catch (err) {
