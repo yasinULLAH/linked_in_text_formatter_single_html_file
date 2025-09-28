@@ -1485,7 +1485,39 @@
                     }
                 }
             });
+            // Add global keyboard shortcuts for main actions
+            document.addEventListener('keydown', e => {
+                if (!e.ctrlKey) return; // Exit if Ctrl key is not pressed
 
+                let handled = true;
+                const key = e.key.toLowerCase();
+
+                if (key === 's') { // Ctrl + S for Save/Update
+                    if (!saveDraftBtn.classList.contains('hidden')) {
+                        saveDraftBtn.click();
+                    } else {
+                        updateDraftBtn.click();
+                    }
+                } else if (e.shiftKey && key === 'c') { // Ctrl + Shift + C for Copy
+                    copyBtn.click();
+                } else if (e.shiftKey && key === 'x') { // Ctrl + Shift + X for Clear
+                    clearBtn.click();
+                } else if (e.shiftKey && key === 'd') { // Ctrl + Shift + D for Draft Manager
+                    draftManagerBtn.click();
+                } else if (e.shiftKey && key === 'r') { // Ctrl + Shift + R for Replacements
+                    replacementsBtn.click();
+                } else if (e.shiftKey && key === 'l') { // Ctrl + Shift + L for LinkedIn Share
+                    shareLinkedInBtn.click();
+                } else if (key === ',') { // Ctrl + , for Settings
+                    settingsBtn.click();
+                } else {
+                    handled = false;
+                }
+
+                if (handled) {
+                    e.preventDefault(); // Prevent default browser actions (like saving the page)
+                }
+            });
             cancelEditBtn.addEventListener('click', resetReplacementForm);
             initialize();
         });
