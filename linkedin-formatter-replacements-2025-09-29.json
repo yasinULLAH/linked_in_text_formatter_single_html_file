@@ -52,5 +52,17 @@
     "find": "([①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳㉑㉒㉓㉔㉕㉖㉗㉘㉙㉚])[^\\r\\n]*◆",
     "replace": "$1",
     "enabled": true
+  },
+  {
+    "id": 1759133169753,
+    "find": "؛",
+    "replace": "،",
+    "enabled": true
+  },
+  {
+    "id": 1759147884975,
+    "find": ";",
+    "replace": ",",
+    "enabled": true
   }
 ]
