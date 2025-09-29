@@ -1214,6 +1214,10 @@
                             tempPreview.className = outputPreview.className;
                             tempPreview.style.cssText = `position: absolute; left: -9999px; width: 600px; white-space: pre-wrap; word-wrap: break-word;`;
                             tempPreview.textContent = formatText(draft.content);
+                            if (/[\u0600-\u06FF]/.test(tempPreview.textContent)) {
+                                tempPreview.style.direction = 'rtl';
+                                tempPreview.style.textAlign = 'right';
+                            }
                             document.body.appendChild(tempPreview);
 
                             html2canvas(tempPreview, { scale: 2, useCORS: true }).then(canvas => {
@@ -1232,6 +1236,13 @@
 
             document.getElementById('export-png-btn').addEventListener('click', (e) => {
                 e.preventDefault();
+                const previewElement = document.getElementById('output-preview');
+                const originalDirection = previewElement.style.direction;
+                const originalTextAlign = previewElement.style.textAlign;
+                if (/[\u0600-\u06FF]/.test(previewElement.textContent)) {
+                    previewElement.style.direction = 'rtl';
+                    previewElement.style.textAlign = 'right';
+                }
                 html2canvas(document.getElementById('output-preview'), {
                     useCORS: true,
                     scale: 3
@@ -1245,6 +1256,8 @@
                     link.download = `${titleLine} - ${date}.png`;
                     link.href = canvas.toDataURL('image/png');
                     link.click();
+                    previewElement.style.direction = originalDirection;
+                    previewElement.style.textAlign = originalTextAlign;
                 });
             });
             function updateButtonState() {
