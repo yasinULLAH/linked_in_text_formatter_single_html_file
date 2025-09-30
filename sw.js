@@ -66,7 +66,7 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "344e4df6da43f1d3b1aac9851b5dd084"
+        "revision": "5289a43f6bd6da1b25bbac3bfb7f7e5c"
     },
     {
         "url": "linkedin-formatter-backup-2025-09-29.json",
@@ -106,7 +106,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "1ed6e618cedf06ab3c3c146dd562ebb8"
+        "revision": "62ca818b330966763796002968a36ed7"
     },
     {
         "url": "fonts/NotoNastaliqUrdu-Bold.ttf",

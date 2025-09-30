@@ -644,7 +644,7 @@
                         .slice(0, 10);
                 }
             }
-            function updateOutput() {
+            window.updateOutput = function () {
                 const text = inputText.value;
                 const formattedText = window.formatText(text);
                 outputPreview.textContent = formattedText;
