@@ -145,7 +145,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
                 <h2 class="text-xl font-semibold mb-4">Preview &amp; Actions</h2>
                 <div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto relative"
-                    dir="auto" id="output-preview">
+                    contenteditable="true" dir="auto" id="output-preview">
                 </div>
                 <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
                     <span class="hidden" id="read-more-hint">LinkedIn typically truncates posts after ~3 lines or
@@ -393,7 +393,6 @@
         }
     </style>
     <script>
-        // Add these new variables
         const replacementsBtn = document.getElementById('replacements-btn');
         const replacementsModal = document.getElementById('replacements-modal');
         const replacementsListContainer = document.getElementById('replacements-list');
@@ -403,6 +402,7 @@
         const replacementIdInput = document.getElementById('replacement-id');
         const replacementFormTitle = document.getElementById('replacement-form-title');
         const cancelEditBtn = document.getElementById('cancel-edit-btn');
+        let isSyncing = false;
         let replacements = JSON.parse(localStorage.getItem('linkedinFormatterReplacements')) || [];
         document.addEventListener('DOMContentLoaded', () => {
             const inputText = document.getElementById('input-text');
@@ -516,13 +516,10 @@
             window.formatText = function (text) {
                 const processParagraphInlineStyles = (line) => {
                     const hashtags = [];
-                    // Step 1: Replace all hashtags with a completely inert placeholder made of symbols.
                     let protectedLine = line.replace(/#[\p{L}\p{N}_]+(\s[\p{L}\p{N}_]+)*/gu, (match) => {
                         hashtags.push(match);
                         return `§¬{${hashtags.length - 1}}¬§`;
                     });
-
-                    // Step 2: Apply all formatting rules to the protected line.
                     let processed = protectedLine;
                     processed = processed.replace(/~~(.*?)~~/g, (m, p1) => toStrikethrough(p1));
                     processed = processed.replace(/\*\*(.*?)\*\*/g, (match, content) => {
@@ -536,14 +533,11 @@
                         const converted = toItalic(content);
                         return converted === content ? `✧ ${content} ✧` : converted;
                     });
-
-                    // Step 3: Restore the original hashtags.
                     if (hashtags.length > 0) {
                         processed = processed.replace(/§¬\{(\d+)\}¬§/g, (match, index) => {
                             return hashtags[parseInt(index, 10)];
                         });
                     }
-
                     return processed;
                 };
                 const lines = text.replace(/—/g, '-').split(/\r\n|\n/);
@@ -588,56 +582,42 @@
                     }
                     return processParagraphInlineStyles(line);
                 });
-
                 let finalOutput = processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
-
-                // Apply custom replacements
                 replacements.filter(r => r.enabled).forEach(rule => {
                     try {
-                        const regex = new RegExp(rule.find, 'g'); // 'g' for global replace
+                        const regex = new RegExp(rule.find, 'g');
                         const processedReplace = rule.replace.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
                         finalOutput = finalOutput.replace(regex, processedReplace);
                     } catch (e) {
                         console.error(`Invalid regex in replacement rule:`, rule.find);
                     }
                 });
-
                 return finalOutput;
             }
             function getHashtagSuggestions(text) {
                 const currentHashtags = new Set((text.match(/#[\p{L}\p{N}_]+/gu) || []).map(tag => tag.substring(1).toLowerCase()));
-
-                // Check for Arabic script characters (used in Urdu)
                 if (/[\u0600-\u06FF]/.test(text)) {
-                    // Use a simpler, more reliable method for Urdu
                     const cleanedText = text
-                        .replace(/[#*_~`\->۔،؟\r\n|\n]/g, ' ') // Remove markdown, punctuation, and newlines
+                        .replace(/[#*_~`\->۔،؟\r\n|\n]/g, ' ')
                         .toLowerCase();
-
                     const words = cleanedText.split(/\s+/).filter(w => w.length > 3 && !/^[0-9]/.test(w));
-
                     if (words.length === 0) return [];
-
                     const frequency = words.reduce((acc, word) => {
                         acc[word] = (acc[word] || 0) + 1;
                         return acc;
                     }, {});
-
                     const sortedWords = Object.keys(frequency)
                         .sort((a, b) => frequency[b] - frequency[a]);
-
                     return sortedWords
                         .filter(word => !currentHashtags.has(word))
                         .slice(0, 10)
                         .map(word => `#${word}`);
                 } else {
-                    // Use the original NLP method for English and other Latin scripts
                     const doc = nlp(text);
                     const nouns = doc.nouns().out('array');
                     const verbs = doc.verbs().out('array');
                     const adjectives = doc.adjectives().out('array');
                     const keywords = [...new Set([...nouns, ...verbs, ...adjectives])];
-
                     return keywords
                         .filter(word => word.length > 2 && !currentHashtags.has(word.toLowerCase()))
                         .map(word => `#${word.replace(/\s+/g, '')}`)
@@ -872,7 +852,7 @@
                             if (data.replacements) {
                                 replacements = data.replacements;
                                 saveReplacementsToStorage();
-                                updateOutput(); // Apply new replacements immediately
+                                updateOutput();
                             }
                             if (data.theme) {
                                 localStorage.setItem('theme', data.theme);
@@ -906,10 +886,11 @@
                 }
             });
             inputText.addEventListener('input', () => {
+                if (isSyncing) return;
                 updateOutput();
                 triggerAutosave();
                 updateHistory(inputText.value);
-                updateButtonState(); // Use the new helper function
+                updateButtonState();
             });
             document.querySelector('.toolbar').addEventListener('click', e => {
                 const button = e.target.closest('button[data-format]');
@@ -951,14 +932,12 @@
                 updateHistory(inputText.value);
             }
             clearBtn.addEventListener('click', () => {
-                //if (confirm('Are you sure you want to clear the text?')) {
                 inputText.value = '';
                 updateOutput();
                 updateHistory('');
                 loadedDraftId = null;
                 updateDraftBtn.classList.add('hidden');
                 saveDraftBtn.classList.remove('hidden');
-                //}
             });
             copyBtn.addEventListener('click', () => {
                 navigator.clipboard.writeText(outputPreview.textContent).then(() => {
@@ -980,14 +959,13 @@
                 if (!titleLine) titleLine = "Untitled Draft";
                 const date = new Date().toLocaleDateString();
                 const name = `${titleLine} - ${date}`;
-
                 if (name && inputText.value.trim()) {
                     const category = "";
                     const newDraft = { id: Date.now(), name: name, content: inputText.value, category: category || '' };
                     drafts.unshift(newDraft);
                     saveDraftsToStorage();
                     loadedDraftId = newDraft.id;
-                    localStorage.setItem('linkedinFormatterLoadedDraftId', loadedDraftId); // Saves the current draft ID
+                    localStorage.setItem('linkedinFormatterLoadedDraftId', loadedDraftId);
                     updateButtonState();
                 } else if (!inputText.value.trim()) {
                     alert("Nothing to save.");
@@ -1003,8 +981,6 @@
                     const oldName = drafts[draftIndex].name;
                     drafts[draftIndex].content = inputText.value;
                     saveDraftsToStorage();
-                    // We removed the lines that hid the update button to prevent state issues.
-                    // For user feedback, we can flash the button text.
                     const originalText = updateDraftBtn.innerHTML;
                     updateDraftBtn.innerHTML = `<i class="bi bi-check-circle-fill"></i> Updated!`;
                     updateDraftBtn.disabled = true;
@@ -1014,7 +990,6 @@
                     }, 2000);
                 } else {
                     alert("Error: Could not find the loaded draft to update. Resetting state.");
-                    // If the draft is missing, reset to the default "Save" state.
                     loadedDraftId = null;
                     updateDraftBtn.classList.add('hidden');
                     saveDraftBtn.classList.remove('hidden');
@@ -1028,12 +1003,10 @@
             draftsListContainer.addEventListener('click', e => {
                 const button = e.target.closest('button[data-action]');
                 if (!button) return;
-
                 const id = parseInt(button.dataset.id, 10);
                 const action = button.dataset.action;
                 const draftIndex = drafts.findIndex(d => d.id === id);
                 if (draftIndex === -1) return;
-
                 if (action === 'load') {
                     if (inputText.value.trim() && !confirm('This will replace your current text. Continue?')) {
                         return;
@@ -1042,14 +1015,14 @@
                     updateOutput();
                     updateHistory(inputText.value);
                     loadedDraftId = id;
-                    localStorage.setItem('linkedinFormatterLoadedDraftId', loadedDraftId); // Saves the loaded draft ID
+                    localStorage.setItem('linkedinFormatterLoadedDraftId', loadedDraftId);
                     updateButtonState();
                     draftManagerModal.classList.add('hidden');
                 } else if (action === 'delete') {
                     if (confirm(`Are you sure you want to delete "${drafts[draftIndex].name}"?`)) {
                         if (loadedDraftId === id) {
                             loadedDraftId = null;
-                            localStorage.removeItem('linkedinFormatterLoadedDraftId'); // Clears the ID if deleted
+                            localStorage.removeItem('linkedinFormatterLoadedDraftId');
                             updateButtonState();
                         }
                         drafts.splice(draftIndex, 1);
@@ -1131,7 +1104,6 @@
                     }
                 } else {
                     customTemplates.push({ id: Date.now().toString(), name, content });
-                    //alert(`Template "${name}" created.`);
                 }
                 saveCustomTemplatesToStorage();
                 renderTemplates();
@@ -1180,12 +1152,10 @@
                 const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
                 let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
                 if (!titleLine) titleLine = "Untitled";
-                //if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
                 const date = new Date().toISOString().slice(0, 10);
                 exportFile(outputPreview.textContent, `${titleLine} - ${date}.txt`, 'text/plain;charset=utf-8');
             });
             document.getElementById('export-md-btn').addEventListener('click', (e) => { e.preventDefault(); exportFile(inputText.value, 'linkedin-post.md', 'text/markdown;charset=utf-8'); });
-            // TXT Export
             document.getElementById('export-selected-txt').addEventListener('click', function () {
                 const selectedCheckboxes = document.querySelectorAll('#drafts-list .draft-select-checkbox:checked');
                 if (selectedCheckboxes.length > 0) {
@@ -1201,8 +1171,6 @@
                     alert('Please select one or more drafts to export.');
                 }
             });
-
-            // JPG Export
             document.getElementById('export-selected-jpg').addEventListener('click', function () {
                 const selectedCheckboxes = document.querySelectorAll('#drafts-list .draft-select-checkbox:checked');
                 if (selectedCheckboxes.length > 0) {
@@ -1219,7 +1187,6 @@
                                 tempPreview.style.textAlign = 'right';
                             }
                             document.body.appendChild(tempPreview);
-
                             html2canvas(tempPreview, { scale: 2, useCORS: true }).then(canvas => {
                                 const link = document.createElement('a');
                                 link.href = canvas.toDataURL('image/jpeg', 0.9);
@@ -1233,7 +1200,6 @@
                     alert('Please select one or more drafts to export.');
                 }
             });
-
             document.getElementById('export-png-btn').addEventListener('click', (e) => {
                 e.preventDefault();
                 const previewElement = document.getElementById('output-preview');
@@ -1250,7 +1216,6 @@
                     const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
                     let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
                     if (!titleLine) titleLine = "Untitled";
-                    //if (titleLine.length > 50) titleLine = titleLine.substring(0, 50);
                     const date = new Date().toISOString().slice(0, 10);
                     const link = document.createElement('a');
                     link.download = `${titleLine} - ${date}.png`;
@@ -1305,7 +1270,6 @@
                 e.preventDefault();
                 const selectedDraftIds = Array.from(document.querySelectorAll('.draft-select-checkbox:checked'))
                     .map(checkbox => parseInt(checkbox.dataset.id, 10));
-
                 if (selectedDraftIds.length === 0) {
                     alert("No drafts selected for PDF export.");
                     return;
@@ -1368,41 +1332,32 @@
                 } else {
                     themeToggle.innerHTML = '<i class="bi bi-moon-stars-fill"></i>';
                 }
-
                 const wip = localStorage.getItem('linkedinFormatter_wip');
                 if (wip) {
                     inputText.value = wip;
                 }
-
-                // Logic to restore the loaded draft state on reload
                 const savedDraftId = parseInt(localStorage.getItem('linkedinFormatterLoadedDraftId'), 10);
                 if (savedDraftId && drafts.some(d => d.id === savedDraftId)) {
                     const correspondingDraft = drafts.find(d => d.id === savedDraftId);
-                    // Only restore the ID if the saved text matches the draft's content
                     if (correspondingDraft && correspondingDraft.content === wip) {
                         loadedDraftId = savedDraftId;
                     } else {
                         localStorage.removeItem('linkedinFormatterLoadedDraftId');
                     }
                 }
-
                 emojis.forEach(emoji => {
                     const btn = document.createElement('button');
                     btn.className = 'text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition';
                     btn.textContent = emoji;
                     emojiGrid.appendChild(btn);
                 });
-
                 if (drafts.length === 0) {
-                    // ... (sample draft creation code is unchanged, so it's omitted here for brevity)
                 }
-
                 updateOutput();
                 updateHistory(inputText.value);
                 updateUndoRedoButtons();
                 renderTemplates();
-                updateButtonState(); // Sets the correct initial button state
-
+                updateButtonState();
                 pdfMake.fonts = {
                     Roboto: { normal: 'Roboto-Regular.ttf', bold: 'Roboto-Medium.ttf', italics: 'Roboto-Italic.ttf', bolditalics: 'Roboto-MediumItalic.ttf' },
                     NotoNastaliqUrdu: { normal: 'NotoNastaliqUrdu-Regular.ttf', bold: 'NotoNastaliqUrdu-Regular.ttf', italics: 'NotoNastaliqUrdu-Regular.ttf', bolditalics: 'NotoNastaliqUrdu-Regular.ttf' }
@@ -1412,7 +1367,6 @@
             function saveReplacementsToStorage() {
                 localStorage.setItem('linkedinFormatterReplacements', JSON.stringify(replacements));
             }
-
             function renderReplacements() {
                 replacementsListContainer.innerHTML = '';
                 if (replacements.length === 0) {
@@ -1441,27 +1395,23 @@
                     replacementsListContainer.appendChild(ruleEl);
                 });
             }
-
             function resetReplacementForm() {
                 replacementForm.reset();
                 replacementIdInput.value = '';
                 replacementFormTitle.textContent = 'Add New Replacement';
                 cancelEditBtn.style.display = 'none';
             }
-
             replacementsBtn.addEventListener('click', () => {
                 renderReplacements();
                 replacementsModal.classList.remove('hidden');
                 replacementsModal.classList.add('flex');
             });
-
             replacementForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const find = findRegexInput.value.trim();
                 const replace = replaceWithInput.value;
                 const id = replacementIdInput.value;
                 if (!find) return;
-
                 if (id) {
                     const index = replacements.findIndex(r => r.id == id);
                     if (index !== -1) replacements[index] = { ...replacements[index], find, replace };
@@ -1473,12 +1423,10 @@
                 updateOutput();
                 resetReplacementForm();
             });
-
             replacementsListContainer.addEventListener('click', e => {
                 const target = e.target;
                 const ruleId = target.closest('[data-id]')?.dataset.id;
                 if (!ruleId) return;
-
                 if (target.closest('.replacement-toggle')) {
                     const index = replacements.findIndex(r => r.id == ruleId);
                     if (index !== -1) {
@@ -1505,45 +1453,39 @@
                     }
                 }
             });
-            // Add global keyboard shortcuts for main actions
             document.addEventListener('keydown', e => {
-                if (!e.ctrlKey) return; // Exit if Ctrl key is not pressed
-
+                if (!e.ctrlKey) return;
                 let handled = true;
                 const key = e.key.toLowerCase();
-
-                if (key === 's') { // Ctrl + S for Save/Update
+                if (key === 's') {
                     if (!saveDraftBtn.classList.contains('hidden')) {
                         saveDraftBtn.click();
                     } else {
                         updateDraftBtn.click();
                     }
-                } else if (e.shiftKey && key === 'c') { // Ctrl + Shift + C for Copy
+                } else if (e.shiftKey && key === 'c') {
                     copyBtn.click();
-                } else if (e.shiftKey && key === 'x') { // Ctrl + Shift + X for Clear
+                } else if (e.shiftKey && key === 'x') {
                     clearBtn.click();
-                } else if (e.shiftKey && key === 'd') { // Ctrl + Shift + D for Draft Manager
+                } else if (e.shiftKey && key === 'd') {
                     draftManagerBtn.click();
-                } else if (e.shiftKey && key === 'r') { // Ctrl + Shift + R for Replacements
+                } else if (e.shiftKey && key === 'r') {
                     replacementsBtn.click();
-                } else if (e.shiftKey && key === 'l') { // Ctrl + Shift + L for LinkedIn Share
+                } else if (e.shiftKey && key === 'l') {
                     shareLinkedInBtn.click();
-                } else if (key === ',') { // Ctrl + , for Settings
+                } else if (key === ',') {
                     settingsBtn.click();
                 } else {
                     handled = false;
                 }
-
                 if (handled) {
-                    e.preventDefault(); // Prevent default browser actions (like saving the page)
+                    e.preventDefault();
                 }
             });
             cancelEditBtn.addEventListener('click', resetReplacementForm);
-            // Add backup/restore functionality for replacement rules
             const backupReplacementsBtn = document.getElementById('backup-replacements-btn');
             const restoreReplacementsBtn = document.getElementById('restore-replacements-btn');
             const restoreReplacementsFile = document.getElementById('restore-replacements-file');
-
             backupReplacementsBtn.addEventListener('click', () => {
                 if (replacements.length === 0) {
                     alert("There are no replacement rules to back up.");
@@ -1560,15 +1502,12 @@
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
             });
-
             restoreReplacementsBtn.addEventListener('click', () => {
                 restoreReplacementsFile.click();
             });
-
             restoreReplacementsFile.addEventListener('change', (event) => {
                 const file = event.target.files[0];
                 if (!file) return;
-
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
@@ -1576,7 +1515,6 @@
                         if (!Array.isArray(importedRules)) {
                             throw new Error("Invalid format: Backup must be a JSON array.");
                         }
-
                         if (confirm("This will overwrite all current replacement rules. Continue?")) {
                             replacements = importedRules;
                             saveReplacementsToStorage();
@@ -1592,39 +1530,42 @@
                 };
                 reader.readAsText(file);
             });
+            outputPreview.addEventListener('input', () => {
+                if (isSyncing) return;
+                isSyncing = true;
+                let rawText = outputPreview.innerText;
+                rawText = rawText.replace(/^★ (.*?) ★$/gm, '# $1');
+                rawText = rawText.replace(/^◆ (.*?) ◆$/gm, '## $1');
+                rawText = rawText.replace(/^• (.*)$/gm, '* $1');
+                const cursorPosition = inputText.selectionStart;
+                inputText.value = rawText;
+                inputText.setSelectionRange(cursorPosition, cursorPosition);
+                isSyncing = false;
+            });
             initialize();
         });
-
-        // PASTE THIS ENTIRE BLOCK AT THE END OF YOUR SCRIPT
         (() => {
-            // This function runs once the page is fully loaded
             window.addEventListener('load', () => {
-
-                // --- 1. Define the HTML and CSS for the new feature ---
                 const featureStyles = `
-            /* Style for the active toggle button */
             .symbol-mode-active {
-                background-color: #bee3f8; /* A light blue color */
+                background-color: #bee3f8; 
             }
             html.dark .symbol-mode-active {
-                background-color: #2b6cb0; /* A darker blue for dark mode */
+                background-color: #2b6cb0; 
             }
         `;
-
                 const symbolToggleButtonHTML = `
             <button
                 class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="symbol-mode-btn" title="Toggle Flower Mode">
                 <i class="bi bi-flower1"></i>
             </button>`;
-
                 const symbolCrudButtonHTML = `
             <button
                 class="text-2xl p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 id="symbol-crud-btn" title="Manage Symbols">
                 <i class="bi bi-palette-fill"></i>
             </button>`;
-
                 const symbolCrudModalHTML = `
             <div class="fixed inset-0 bg-black bg-opacity-60 hidden items-center justify-center z-50 p-4" id="symbol-crud-modal">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col">
@@ -1653,16 +1594,12 @@
                     </div>
                 </div>
             </div>`;
-
-                // --- 2. Inject the CSS and HTML into the page ---
                 const styleSheet = document.createElement("style");
                 styleSheet.innerText = featureStyles;
                 document.head.appendChild(styleSheet);
-
                 const replacementsBtn = document.getElementById('replacements-btn');
                 const themeToggleBtn = document.getElementById('theme-toggle');
                 const replacementsModal = document.getElementById('replacements-modal');
-
                 if (replacementsBtn) {
                     replacementsBtn.insertAdjacentHTML('afterend', symbolCrudButtonHTML);
                 }
@@ -1672,8 +1609,6 @@
                 if (replacementsModal) {
                     replacementsModal.insertAdjacentHTML('afterend', symbolCrudModalHTML);
                 }
-
-                // --- 3. Get references to all the new elements ---
                 const symbolModeBtn = document.getElementById('symbol-mode-btn');
                 const symbolCrudBtn = document.getElementById('symbol-crud-btn');
                 const symbolCrudModal = document.getElementById('symbol-crud-modal');
@@ -1685,8 +1620,6 @@
                 const symbolFormTitle = document.getElementById('symbol-form-title');
                 const cancelSymbolEditBtn = document.getElementById('cancel-symbol-edit-btn');
                 const closeBtn = symbolCrudModal.querySelector('.modal-close-btn');
-
-                // --- 4. State Management & Logic ---
                 let isSymbolModeActive = JSON.parse(localStorage.getItem('linkedinFormatterSymbolMode')) || false;
                 let symbolMappings = JSON.parse(localStorage.getItem('linkedinFormatterSymbolMappings')) || [
                     { id: 1, symbol: '◆', flower: '🌸' },
@@ -1694,11 +1627,9 @@
                     { id: 3, symbol: '•', flower: '🌹' },
                     { id: 2, symbol: '⟫', flower: '🌻' },
                 ];
-
                 function saveSymbolMappingsToStorage() {
                     localStorage.setItem('linkedinFormatterSymbolMappings', JSON.stringify(symbolMappings));
                 }
-
                 function renderSymbolMappings() {
                     symbolMapList.innerHTML = '';
                     if (symbolMappings.length === 0) {
@@ -1722,26 +1653,19 @@
                         symbolMapList.appendChild(el);
                     });
                 }
-
                 function resetSymbolMappingForm() {
                     symbolMapForm.reset();
                     symbolMapIdInput.value = '';
                     symbolFormTitle.textContent = 'Add New Symbol-Flower Pair';
                     cancelSymbolEditBtn.style.display = 'none';
                 }
-
                 function updateToggleButtonState() {
                     symbolModeBtn.classList.toggle('symbol-mode-active', isSymbolModeActive);
                 }
-
-                // --- 5. Integrate with your existing functions by "wrapping" them ---
                 if (window.formatText) {
                     const originalFormatText = window.formatText;
                     window.formatText = function (text) {
-                        // First, run the original formatting
                         let finalOutput = originalFormatText(text);
-
-                        // Then, apply our flower mode logic if it's active
                         if (isSymbolModeActive && symbolMappings.length > 0) {
                             const symbolMap = symbolMappings.reduce((acc, item) => {
                                 acc[item.symbol] = item.flower;
@@ -1749,7 +1673,6 @@
                             }, {});
                             const escapedSymbols = Object.keys(symbolMap).map(s => s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'));
                             const findRegex = new RegExp(escapedSymbols.join('|'), 'g');
-
                             if (findRegex.source !== '(?:)') {
                                 finalOutput = finalOutput.replace(findRegex, (match) => symbolMap[match] || match);
                             }
@@ -1757,33 +1680,27 @@
                         return finalOutput;
                     };
                 }
-
-                // --- 6. Add Event Listeners ---
                 symbolModeBtn.addEventListener('click', () => {
                     isSymbolModeActive = !isSymbolModeActive;
                     localStorage.setItem('linkedinFormatterSymbolMode', isSymbolModeActive);
                     updateToggleButtonState();
-                    if (window.updateOutput) window.updateOutput(); // Refresh the preview
+                    if (window.updateOutput) window.updateOutput();
                 });
-
                 symbolCrudBtn.addEventListener('click', () => {
                     renderSymbolMappings();
                     symbolCrudModal.classList.remove('hidden');
                     symbolCrudModal.classList.add('flex');
                 });
-
                 closeBtn.addEventListener('click', () => {
                     symbolCrudModal.classList.add('hidden');
                     symbolCrudModal.classList.remove('flex');
                 });
-
                 symbolMapForm.addEventListener('submit', (e) => {
                     e.preventDefault();
                     const symbol = symbolCharInput.value;
                     const flower = flowerEmojiInput.value;
                     const id = symbolMapIdInput.value;
                     if (!symbol || !flower) return;
-
                     if (id) {
                         const index = symbolMappings.findIndex(m => m.id == id);
                         if (index !== -1) symbolMappings[index] = { ...symbolMappings[index], symbol, flower };
@@ -1795,13 +1712,11 @@
                     if (window.updateOutput) window.updateOutput();
                     resetSymbolMappingForm();
                 });
-
                 symbolMapList.addEventListener('click', (e) => {
                     const button = e.target.closest('button[data-action]');
                     if (!button) return;
                     const id = parseInt(button.dataset.id);
                     const action = button.dataset.action;
-
                     if (action === 'delete') {
                         symbolMappings = symbolMappings.filter(m => m.id !== id);
                     } else if (action === 'edit') {
@@ -1813,18 +1728,14 @@
                             symbolFormTitle.textContent = 'Edit Symbol-Flower Pair';
                             cancelSymbolEditBtn.style.display = 'inline-flex';
                         }
-                        return; // Don't re-render or save yet
+                        return;
                     }
                     saveSymbolMappingsToStorage();
                     renderSymbolMappings();
                     if (window.updateOutput) window.updateOutput();
                 });
-
                 cancelSymbolEditBtn.addEventListener('click', resetSymbolMappingForm);
-
-                // --- 7. Final Initialization ---
                 updateToggleButtonState();
-
             });
         })();
     </script>
