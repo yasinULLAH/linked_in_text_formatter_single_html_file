@@ -64,5 +64,83 @@
     "find": ";",
     "replace": ",",
     "enabled": true
+  },
+  {
+    "id": 1759301194196,
+    "find": "▬▬▬▬▬▬▬+",
+    "replace": "________________________",
+    "enabled": true
+  },
+  {
+    "id": 1759302114684,
+    "find": "–",
+    "replace": "-",
+    "enabled": true
+  },
+  {
+    "id": 1759304129666,
+    "find": "\\d+.*:\\d+\\n",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1759742808779,
+    "find": "http:\\/\\/googleusercontent.com\\/youtube_content\\/\\d+",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1759749683161,
+    "find": "\\$\\$",
+    "replace": "\"",
+    "enabled": true
+  },
+  {
+    "id": 1759749797941,
+    "find": "⬅ ([𝟭𝟮𝟯𝟰𝟱𝟲𝟳𝟴𝟵])",
+    "replace": "$1",
+    "enabled": true
+  },
+  {
+    "id": 1759751070642,
+    "find": "\\(https?.*\\)",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1759751275835,
+    "find": "(\\r?\\n)*\\s*$",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1759751392705,
+    "find": "✨",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1759752034330,
+    "find": "💐|🌸|🥀",
+    "replace": "",
+    "enabled": false
+  },
+  {
+    "id": 1759822012577,
+    "find": "(?<=[\\S(])\\s?[◆✧]\\s?",
+    "replace": " ",
+    "enabled": true
+  },
+  {
+    "id": 1759822861371,
+    "find": "✧ ✧",
+    "replace": "✧",
+    "enabled": true
+  },
+  {
+    "id": 1759823753680,
+    "find": "⚖️|📖",
+    "replace": "",
+    "enabled": true
   }
 ]
