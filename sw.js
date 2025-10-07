@@ -66,15 +66,19 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "e7d71a1c66e9263840d7aacb9140022d"
+        "revision": "988ec74300117b8d298b5655b0a9b849"
     },
     {
         "url": "linkedin-formatter-backup-2025-09-29.json",
         "revision": "55f20e38f1fc03ddbbedcea7965f222c"
     },
     {
-        "url": "linkedin-formatter-replacements-2025-09-29.json",
-        "revision": "6b546bbc9a5ff140b7b0c880b4527f59"
+        "url": "linkedin-formatter-replacements-Yasin.json",
+        "revision": "50df5063b592c9074de8615c2456297e"
+    },
+    {
+        "url": "linkedin-formatter-symbols-Yasin.json",
+        "revision": "0162db35d36beeb854e18ae7130ca140"
     },
     {
         "url": "manifest.json",
@@ -106,7 +110,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "b562ab52214208ab2d4d1e55128a8f31"
+        "revision": "88880ac2062f5d65e31f0c6c8e833b4d"
     },
     {
         "url": "fonts/NotoNastaliqUrdu-Bold.ttf",
