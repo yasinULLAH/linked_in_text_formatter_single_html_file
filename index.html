@@ -1453,15 +1453,17 @@
                 }
             });
             document.addEventListener('keydown', e => {
-                if (!e.ctrlKey) return;
-                let handled = true;
                 const key = e.key.toLowerCase();
-                if (key === 's') {
+                let handled = true;
+
+                if (e.ctrlKey && key === 's') {
                     if (!saveDraftBtn.classList.contains('hidden')) {
                         saveDraftBtn.click();
                     } else {
                         updateDraftBtn.click();
                     }
+                } else if (e.ctrlKey && key === ',') {
+                    settingsBtn.click();
                 } else if (e.shiftKey && key === 'c') {
                     copyBtn.click();
                 } else if (e.shiftKey && key === 'x') {
@@ -1472,11 +1474,10 @@
                     replacementsBtn.click();
                 } else if (e.shiftKey && key === 'l') {
                     shareLinkedInBtn.click();
-                } else if (key === ',') {
-                    settingsBtn.click();
                 } else {
                     handled = false;
                 }
+
                 if (handled) {
                     e.preventDefault();
                 }
