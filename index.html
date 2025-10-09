@@ -145,7 +145,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col">
                 <h2 class="text-xl font-semibold mb-4">Preview &amp; Actions</h2>
                 <div class="preview-content w-full flex-grow bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-4 overflow-y-auto relative"
-                    contenteditable="true" dir="auto" id="output-preview">
+                    dir="auto" id="output-preview">
                 </div>
                 <div class="text-xs italic text-gray-500 dark:text-gray-400 mt-2">
                     <span class="hidden" id="read-more-hint">LinkedIn typically truncates posts after ~3 lines or
@@ -1317,6 +1317,14 @@
                 updateOutput();
             }
             function initialize() {
+                const outputPreview = document.getElementById('output-preview');
+                outputPreview.addEventListener('click', () => {
+                    outputPreview.setAttribute('contenteditable', 'true');
+                    outputPreview.focus();
+                });
+                outputPreview.addEventListener('blur', () => {
+                    outputPreview.setAttribute('contenteditable', 'false');
+                });
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                     themeToggle.innerHTML = '<i class="bi bi-sun-fill"></i>';
