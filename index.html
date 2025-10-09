@@ -583,15 +583,6 @@
                     return processParagraphInlineStyles(line);
                 });
                 let finalOutput = processedLines.join('\n').replace(/\n{3,}/g, "\n\n").trim();
-                replacements.filter(r => r.enabled).forEach(rule => {
-                    try {
-                        const regex = new RegExp(rule.find, 'g');
-                        const processedReplace = rule.replace.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
-                        finalOutput = finalOutput.replace(regex, processedReplace);
-                    } catch (e) {
-                        console.error(`Invalid regex in replacement rule:`, rule.find);
-                    }
-                });
                 return finalOutput;
             }
             function getHashtagSuggestions(text) {
@@ -955,7 +946,7 @@
             redoBtn.addEventListener('click', redo);
             saveDraftBtn.addEventListener('click', () => {
                 const lines = inputText.value.split(/\r?\n/).map(l => l.trim());
-                let titleLine = lines.find(l => l && l !== "بِسْمِ ٱللهِ ٱلرَّحْمَٰنِ ٱلرَّحِيْمِ");
+                let titleLine = lines.find(l => l && !/^بسم الله/.test(l.replace(/[\u064B-\u065F\u0670\u0640]/g, "")));
                 if (!titleLine) titleLine = "Untitled Draft";
                 const date = new Date().toLocaleDateString();
                 const name = `${titleLine} - ${date}`;
@@ -1692,6 +1683,15 @@
                                 }
                             }
                         }
+                        replacements.filter(r => r.enabled).forEach(rule => {
+                            try {
+                                const regex = new RegExp(rule.find, 'g');
+                                const processedReplace = rule.replace.replace(/\\n/g, '\n').replace(/\\t/g, '\t');
+                                finalOutput = finalOutput.replace(regex, processedReplace);
+                            } catch (e) {
+                                console.error(`Invalid regex in replacement rule:`, rule.find);
+                            }
+                        });
                         return finalOutput;
                     };
                 }

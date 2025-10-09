@@ -142,5 +142,11 @@
     "find": "⚖️|📖",
     "replace": "",
     "enabled": true
+  },
+  {
+    "id": 1759994486843,
+    "find": "🌹|💐|🥀|🌸",
+    "replace": "",
+    "enabled": true
   }
 ]
