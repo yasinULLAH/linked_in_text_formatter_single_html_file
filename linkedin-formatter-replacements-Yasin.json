@@ -120,14 +120,8 @@
     "enabled": true
   },
   {
-    "id": 1759752034330,
-    "find": "💐|🌸|🥀",
-    "replace": "",
-    "enabled": false
-  },
-  {
     "id": 1759822012577,
-    "find": "(?<=[\\S(])\\s?[◆✧]\\s?",
+    "find": "(?<=[\\S(])\\s?[◆✧🌸]\\s?",
     "replace": " ",
     "enabled": true
   },
@@ -147,6 +141,6 @@
     "id": 1759994486843,
     "find": "🌹|💐|🥀|🌸",
     "replace": "",
-    "enabled": true
+    "enabled": false
   }
 ]
