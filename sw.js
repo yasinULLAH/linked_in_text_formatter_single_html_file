@@ -66,7 +66,7 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "7a57e8e3e2467ee522e3c13bea715b70"
+        "revision": "e24457e1a7f02aed4a1b5b15c3ec2a6e"
     },
     {
         "url": "linkedin-formatter-backup-2025-09-29.json",
@@ -102,11 +102,11 @@ if (workbox) {
     },
     {
         "url": "replacements-Yasin-linkedin-formatter.json",
-        "revision": "67f6b4842645450821bf4fcbc19e9f04"
+        "revision": "a0cee65c67e02e82cffe26ccefe77435"
     },
     {
         "url": "sw.js",
-        "revision": "8e622c0bae62c4e7971ca1baeb6b176b"
+        "revision": "328f27866ace5fd14ec12eed92ba270a"
     },
     {
         "url": "symbols-Yasin-linkedin-formatter.json",
