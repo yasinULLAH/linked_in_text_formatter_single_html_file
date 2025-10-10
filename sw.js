@@ -66,7 +66,7 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "e24457e1a7f02aed4a1b5b15c3ec2a6e"
+        "revision": "9491fafe68c54e8665ec7e3b800f43be"
     },
     {
         "url": "linkedin-formatter-backup-2025-09-29.json",
@@ -106,7 +106,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "328f27866ace5fd14ec12eed92ba270a"
+        "revision": "1f2b14555a7b48cfb71960656e777e6f"
     },
     {
         "url": "symbols-Yasin-linkedin-formatter.json",
