@@ -72,6 +72,14 @@
         textarea {
             font-family: var(--font-primary), var(--font-urdu);
         }
+
+        .btn-social {
+            @apply inline-flex items-center justify-center text-2xl p-3 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200;
+        }
+
+        .copied {
+            @apply bg-green-500 text-white hover:bg-green-600;
+        }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link href="manifest.json" rel="manifest" />
@@ -157,8 +165,18 @@
                         Result
                     </button>
                     <button class="btn btn-danger" id="clear-btn"><i class="bi bi-trash"></i> Clear Text</button>
-                    <button class="btn btn-secondary col-span-2 sm:col-span-1" id="share-linkedin-btn"><i
-                            class="bi bi-linkedin"></i> Share on LinkedIn</button>
+                    <div class="col-span-2 sm:col-span-3 grid grid-cols-5 gap-3" id="social-share-container">
+                        <button class="btn-social" data-limit="2800" title="Copy for LinkedIn"><i
+                                class="bi bi-linkedin"></i></button>
+                        <button class="btn-social" data-limit="280" title="Copy for X (Twitter)"><i
+                                class="bi bi-twitter-x"></i></button>
+                        <button class="btn-social" data-limit="5000" title="Copy for Facebook"><i
+                                class="bi bi-facebook"></i></button>
+                        <button class="btn-social" data-limit="2200" title="Copy for Instagram"><i
+                                class="bi bi-instagram"></i></button>
+                        <button class="btn-social" data-limit="500" title="Copy for Threads"><i
+                                class="bi bi-threads"></i></button>
+                    </div>
                 </div>
             </div>
         </main>
@@ -938,10 +956,43 @@
                     setTimeout(() => copyBtn.innerHTML = originalText, 2000);
                 });
             });
-            shareLinkedInBtn.addEventListener('click', () => {
-                const text = encodeURIComponent(outputPreview.textContent);
-                const url = `https://www.linkedin.com/feed/?shareActive=true&text=${text}`;
-                window.open(url, '_blank');
+            const socialShareContainer = document.getElementById('social-share-container');
+            socialShareContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.btn-social');
+                if (!button) return;
+
+                const limit = parseInt(button.dataset.limit, 10);
+                const fullText = outputPreview.textContent;
+                const readMoreLink = prompt("Enter a link to add after 'Read More' (optional, press OK if empty):", "");
+
+                let readMoreText = "\n\nRead more...";
+                if (readMoreLink && readMoreLink.trim() !== "") {
+                    readMoreText = `\n\nRead more: ${readMoreLink}`;
+                }
+
+                let finalText = fullText;
+                if (fullText.length > limit) {
+                    // Ensure space for the "Read more..." text and link
+                    const truncatedLength = limit - readMoreText.length - 3; // -3 for "..."
+                    if (truncatedLength > 0) {
+                        finalText = fullText.substring(0, truncatedLength) + "..." + readMoreText;
+                    } else {
+                        alert("The content is too long to add a 'Read More' link within the platform's limit.");
+                        return;
+                    }
+                }
+
+                navigator.clipboard.writeText(finalText).then(() => {
+                    const originalIconHTML = button.innerHTML;
+                    button.classList.add('copied');
+                    button.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    setTimeout(() => {
+                        button.classList.remove('copied');
+                        button.innerHTML = originalIconHTML;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy text: ', err);
+                });
             });
             undoBtn.addEventListener('click', undo);
             redoBtn.addEventListener('click', redo);
