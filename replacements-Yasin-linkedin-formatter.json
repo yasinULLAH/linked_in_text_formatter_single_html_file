@@ -141,7 +141,7 @@
     "id": 1759994486843,
     "find": "🌹|💐|🥀|🌸",
     "replace": "",
-    "enabled": false
+    "enabled": true
   },
   {
     "id": 1760084475340,
@@ -183,6 +183,12 @@
     "id": 1760092986532,
     "find": "🤝 🥀",
     "replace": "🤝",
+    "enabled": true
+  },
+  {
+    "id": 1760243719141,
+    "find": "🌟",
+    "replace": "",
     "enabled": true
   }
 ]
