@@ -202,5 +202,23 @@
     "find": "\\[{1,2}\\d+(?::\\d+)?\\]{1,2}",
     "replace": "",
     "enabled": true
+  },
+  {
+    "id": 1760509782483,
+    "find": "\\\\#",
+    "replace": "#",
+    "enabled": true
+  },
+  {
+    "id": 1760524784860,
+    "find": "(\\r?\\n)*\\s*$",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1760525148677,
+    "find": "ہیش ٹیگز: \\n\\n",
+    "replace": "",
+    "enabled": true
   }
 ]
