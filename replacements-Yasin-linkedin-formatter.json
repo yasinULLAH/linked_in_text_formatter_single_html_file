@@ -220,5 +220,41 @@
     "find": "ہیش ٹیگز: \\n\\n",
     "replace": "",
     "enabled": true
+  },
+  {
+    "id": 1760525868815,
+    "find": "\\n\\n\\n",
+    "replace": "\\n",
+    "enabled": true
+  },
+  {
+    "id": 1760528467170,
+    "find": "💐 ہیش ٹیگز: 🥀\\n",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1760594631856,
+    "find": "ہیش ٹیگز:\\n",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1760596195477,
+    "find": "AdvFaizSyed",
+    "replace": "ZaidPatel",
+    "enabled": true
+  },
+  {
+    "id": 1760597225106,
+    "find": "\\*\\*\\#",
+    "replace": "#",
+    "enabled": true
+  },
+  {
+    "id": 1760598979267,
+    "find": "💐 §¬{𝟬}¬§ 🥀\\n\\n",
+    "replace": "",
+    "enabled": true
   }
 ]
