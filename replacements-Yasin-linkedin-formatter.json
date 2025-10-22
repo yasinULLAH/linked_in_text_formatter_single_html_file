@@ -273,7 +273,7 @@
     "id": 1760771687955,
     "find": "________________________\\n\\n",
     "replace": "",
-    "enabled": true
+    "enabled": false
   },
   {
     "id": 1760866438979,
@@ -327,6 +327,18 @@
     "id": 1760957297924,
     "find": "\\n\\n\\n",
     "replace": "\\n",
+    "enabled": true
+  },
+  {
+    "id": 1761032504958,
+    "find": "“|”|✧|\"|\\*",
+    "replace": "",
+    "enabled": true
+  },
+  {
+    "id": 1761127619657,
+    "find": "",
+    "replace": "",
     "enabled": true
   }
 ]
